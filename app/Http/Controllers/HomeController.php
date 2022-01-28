@@ -33,7 +33,10 @@ class HomeController extends Controller
             ->orderBy('updated_at', 'DESC')
             ->get();
 
-        return view('create', compact('memos'));
+        $tags = Tag::where('user_id', '=', \Auth::id())->where('deleted_at')->orderBy('id', 'DESC')
+        ->get();
+
+        return view('create', compact('memos', 'tags'));
     }
 
     public function store(Request $request)
@@ -53,6 +56,12 @@ class HomeController extends Controller
                 $tag_id = Tag::insertGetId(['user_id' => \Auth::id(), 'name' => $posts['new_tag']]);
                 // memo_tagsにinsertして、メモとタグを紐づける
                 MemoTag::insert(['memo_id' => $memo_id, 'tag_id' => $tag_id]);
+            }
+            // 既存タグが紐づけられた場合
+            if(!empty($posts['tags'][0])){
+                foreach($posts['tags'] as $tag){
+                    MemoTag::insert(['memo_id' => $memo_id, 'tag_id' => $tag]);
+                }
             }
         });
         // ===== トランザクション終了 =====
