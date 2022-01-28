@@ -87,9 +87,11 @@
                 </div>
                 <div class="col-md-4 p-0">
                     <div class="card">
-                        <div class="card-header">中央カラム</div>
+                        <div class="card-header">メモ一覧</div>
                         <div class="card-body">
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    @foreach($memos as $memo)
+                            <a class="card-text d-block">{{ $memo['content'] }}</a>
+                    @endforeach
                         </div>
                     </div>
                 </div>
