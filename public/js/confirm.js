@@ -4,7 +4,6 @@ function deleteHandle(event) {
     if(window.confirm('本当に削除していいですか？')) {
         // 削除OKならformを再開
         document.getElementById('delete-form').submit();
-    }else{
-        alert('キャンセルしました');
+        alert('削除しました');
     }
 }
