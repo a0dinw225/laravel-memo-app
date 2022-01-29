@@ -11,7 +11,7 @@
         <form id="delete-form" action="{{ route('destory') }}" method="POST">
             @csrf
             <input type="hidden" name="memo_id" value="{{$edit_memo[0]['id']}}" />
-            <i class="fas fa-trash me-4" onclick="deleteHandle(event);"></i>
+            <i class="fas fa-trash me-3" onclick="deleteHandle(event);"></i>
         </form>
     </div>
     <form class="card-body my-card-body" action="{{ route('update') }}" method="POST">
