@@ -1,62 +1,111 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+## name(アプリケーション名)
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+「 LaravelSimpleMemo 」
 
-## About Laravel
+## Overview（アプリケーションの概要）
+ 
+Laravelでメモを作成。
+ 
+## Functions & Technology List(機能と技術一覧)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Webサービス機能一覧
+* 認証機能
+* メモ作成機能
+* メモ編集機能
+* メモ削除機能
+* タグ機能
+* タグ追加機能  
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+使用した技術一覧
+* Laravel/ui
+* 一対多, 多対多の関係 
+* データベース(MySQL)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## How to Use(利用方法)
 
-## Learning Laravel
+会員登録してログインすると、メモ一覧に遷移してメモを作成することができる。  
+そして、タグを追加することでメモと紐づけられる。タグ一覧からタグを選択すると紐づいているメモ一覧が表示される。
+ 
+## Features(Webサービスの特徴)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+* 認証機能はLaravel/uiを利用している。
+* メモアプリとして最低限の機能とタグ機能を実装している。
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## ER図
 
-## Laravel Sponsors
+![コメント 2022-01-30 135731](https://user-images.githubusercontent.com/93024617/151687277-3c48333a-a260-4e28-b752-72f0625468a3.png)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Requirement(要件)
 
-### Premium Partners
+* HTML5
+* CSS3
+* Bootstrap v5.0
+* PHPバージョン 7.4.21
+* Laravelバージョン 8.5.19
+* Web server : Apache
+* MySQL Version 5.7.34
+* Node.js v16.13.2
+* npm バージョン　8.1.2
+ 
+## Installation(インストール手順)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
+MAMP　ダウンロード
 
-## Contributing
+https://www.mamp.info/en/downloads/
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+composerのインストール
 
-## Code of Conduct
+```
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "if (hash_file('sha384', 'composer-setup.php') === '906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+composer -v
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+うまく動かなかった場合
+```
+sudo mv composer.phar /usr/local/bin/composer
+composer -v
+```
 
-## Security Vulnerabilities
+node.jsとnpmの導入
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+node.js　推奨版LTSをダウンロード
 
-## License
+https://nodejs.org/ja/
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+node -v
+npm -v
+```
+
+laravelプロジェクト作成
+
+```
+composer create-project 'laravel/laravel=8.5.19' --prefer-dist laravel-simple-memo
+```
+
+composerインストール
+```
+composer require laravel/ui
+```
+
+bootstrap導入
+```
+php artisan ui bootstrap --auth
+```
+
+npmインストール
+```
+npm install && npm run dev
+```
+
+うまくいかない場合は
+
+```
+npm audit fix
+npm audit fix --force
+npm install
+npm run dev
+```
