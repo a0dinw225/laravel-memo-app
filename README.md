@@ -77,6 +77,7 @@ php artisan migrate
 ```
 php artisan key:generate
 ```
+※`.envのAPP_KEY`が設定されるため、コンテナを再起動して`.env`を再読み込みする必要がある
 
 ## URL  
 http://localhost:8000
