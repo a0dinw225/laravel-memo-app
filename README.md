@@ -46,6 +46,13 @@ Webサービス機能一覧
  
 ## Installation(インストール手順)
 
+### Dockerによる環境構築
+
+`.env`を作成しDB接続のパスワードを設定  
+```
+DB_PASSWORD=
+```
+
 イメージ作成
 ```
 docker-compose build
@@ -54,11 +61,6 @@ docker-compose build
 コンテナ起動
 ```
 docker-compose up
-```
-
-Composerインストール
-```
-composer install
 ```
 
 APPコンテナに入る
@@ -76,17 +78,6 @@ php artisan migrate
 php artisan key:generate
 ```
 
-DB接続のパスワードを設定  
-.env
-```
-DB_PASSWORD=
-```
-
-コンテナ再起動
-```
-docker-compose restart
-```
-
 ## URL  
 http://localhost:8000
 
@@ -101,4 +92,4 @@ MySQL接続
 ```
 mysql -u root -p
 ```
-※パスワードは`.env`の`DB_PASSWORD`の設定
+※パスワードは`.env`の`DB_PASSWORD`
