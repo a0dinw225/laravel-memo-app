@@ -4,7 +4,7 @@
 
 ## Overview（アプリケーションの概要）
  
-Laravelでメモを作成。
+Laravelでメモアプリを作成。
  
 ## Functions & Technology List(機能と技術一覧)
 
@@ -16,11 +16,6 @@ Webサービス機能一覧
 * タグ機能
 * タグ追加機能  
 
-使用した技術一覧
-* Laravel/ui
-* 一対多, 多対多の関係 
-* データベース(MySQL)
-
 ## How to Use(利用方法)
 
 会員登録してログインすると、メモ一覧に遷移してメモを作成することができる。  
@@ -28,7 +23,7 @@ Webサービス機能一覧
 
 ## image(イメージ図)
 
-![コメント 2022-01-30 141521](https://user-images.githubusercontent.com/93024617/151687703-ecf83844-4fea-43e0-8668-69c83763679f.png)
+<img width="1438" alt="スクリーンショット 2023-04-29 14 12 17" src="https://user-images.githubusercontent.com/93024617/235284949-59c16612-8901-4dbb-9eb8-0512aba101d7.png">
  
 ## Features(Webサービスの特徴)
 
@@ -45,71 +40,65 @@ Webサービス機能一覧
 * CSS3
 * Bootstrap v5.0
 * PHPバージョン 7.4.21
-* Laravelバージョン 8.5.19
+* Laravelバージョン 8.79.0
 * Web server : Apache
-* MySQL Version 5.7.34
-* Node.js v16.13.2
-* npm バージョン　8.1.2
+* MySQL Version 8.0
  
 ## Installation(インストール手順)
 
-MAMP　ダウンロード
-
-https://www.mamp.info/en/downloads/
-
-composerのインストール
-
+イメージ作成
 ```
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-php -r "if (hash_file('sha384', 'composer-setup.php') === '906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-php composer-setup.php
-php -r "unlink('composer-setup.php');"
-composer -v
+docker-compose build
 ```
 
-うまく動かなかった場合
+コンテナ起動
 ```
-sudo mv composer.phar /usr/local/bin/composer
-composer -v
-```
-
-node.jsとnpmの導入
-
-node.js　推奨版LTSをダウンロード
-
-https://nodejs.org/ja/
-
-```
-node -v
-npm -v
+docker-compose up
 ```
 
-laravelプロジェクト作成
-
+Composerインストール
 ```
-composer create-project 'laravel/laravel=8.5.19' --prefer-dist laravel-simple-memo
-```
-
-composerインストール
-```
-composer require laravel/ui
+composer install
 ```
 
-bootstrap導入
+APPコンテナに入る
 ```
-php artisan ui bootstrap --auth
-```
-
-npmインストール
-```
-npm install && npm run dev
+docker exec -it myapp /bin/bash
 ```
 
-うまくいかない場合は
+マイグレーションを実行
+```
+php artisan migrate
+```
 
+暗号化キー設定
 ```
-npm audit fix
-npm audit fix --force
-npm install
-npm run dev
+php artisan key:generate
 ```
+
+DB接続のパスワードを設定  
+.env
+```
+DB_PASSWORD=
+```
+
+コンテナ再起動
+```
+docker-compose restart
+```
+
+## URL  
+http://localhost:8000
+
+## DB接続手順
+
+DBコンテナに入る
+```
+docker exec -it mydb /bin/bash
+```
+
+MySQL接続
+```
+mysql -u root -p
+```
+※パスワードは`.env`の`DB_PASSWORD`の設定
