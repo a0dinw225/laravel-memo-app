@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Contracts\View\View;
 use App\Models\Memo;
 use App\Models\Tag;
 use App\Models\MemoTag;
+use App\Repositories\TagRepository;
 use DB;
 
 class HomeController extends Controller
@@ -15,8 +17,9 @@ class HomeController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(TagRepository $tagRepository)
     {
+        $this->tagRepository = $tagRepository;
         $this->middleware('auth');
     }
 
@@ -25,10 +28,10 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(): View
     {
-        $tags = Tag::where('user_id', '=', \Auth::id())->where('deleted_at')->orderBy('id', 'DESC')
-        ->get();
+        $auth_id = \Auth::id();
+        $tags = $this->tagRepository->findUserTags($auth_id);
 
         return view('create', compact('tags'));
     }
