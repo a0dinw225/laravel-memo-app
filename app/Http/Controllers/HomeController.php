@@ -7,19 +7,24 @@ use Illuminate\Contracts\View\View;
 use App\Models\Memo;
 use App\Models\Tag;
 use App\Models\MemoTag;
-use App\Repositories\TagRepository;
+use App\Services\TagService;
+use App\Services\MemoService;
 use DB;
 
 class HomeController extends Controller
 {
+    protected $tagService;
+    protected $memoService;
+
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(TagRepository $tagRepository)
+    public function __construct(TagService $tagService, MemoService $memoService)
     {
-        $this->tagRepository = $tagRepository;
+        $this->tagService = $tagService;
+        $this->memoService = $memoService;
         $this->middleware('auth');
     }
 
@@ -31,7 +36,7 @@ class HomeController extends Controller
     public function index(): View
     {
         $auth_id = \Auth::id();
-        $tags = $this->tagRepository->findUserTags($auth_id);
+        $tags = $this->tagService->getUserTags($auth_id);
 
         return view('create', compact('tags'));
     }
@@ -67,24 +72,20 @@ class HomeController extends Controller
         return redirect( route('home') );
     }
 
-    public function edit($id)
+    /**
+     * Edit screen for memo
+     * @param int $id
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function edit(int $id): View
     {
-        $edit_memo = Memo::select('memos.*', 'tags.id AS tag_id')
-        ->leftJoin('memo_tags', 'memo_tags.memo_id', '=', 'memos.id')
-        ->leftJoin('tags', 'memo_tags.tag_id', '=', 'tags.id')
-        ->where('memos.user_id', '=', \Auth::id())
-        ->where('memos.id', '=', $id)
-        ->whereNull('memos.deleted_at')
-        ->get();
+        $authId = \Auth::id();
+        $tags = $this->tagService->getUserTags($authId);
+        $getMemoTags = $this->memoService->getMemoTags($id, $authId);
+        $editMemo = $getMemoTags['memo_with_tags'][0];
+        $memoTagIds = $getMemoTags['memo_tag_ids'];
 
-        $include_tags = [];
-        foreach($edit_memo as $memo) {
-            array_push($include_tags, $memo['tag_id']);
-        }
-        $tags = Tag::where('user_id', '=', \Auth::id())->where('deleted_at')->orderBy('id', 'DESC')
-        ->get();
-
-        return view('edit', compact('edit_memo', 'include_tags', 'tags'));
+        return view('edit', compact('editMemo', 'memoTagIds', 'tags'));
     }
 
     public function update(Request $request)
