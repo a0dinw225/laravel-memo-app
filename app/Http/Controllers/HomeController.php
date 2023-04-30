@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\MemoRequest;
 use Illuminate\Contracts\View\View;
 use App\Models\Memo;
 use App\Models\Tag;
@@ -13,7 +15,10 @@ use DB;
 
 class HomeController extends Controller
 {
+    /** @var TagService */
     protected $tagService;
+
+    /** @var MemoService */
     protected $memoService;
 
     /**
@@ -30,8 +35,7 @@ class HomeController extends Controller
 
     /**
      * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return \Illuminate\Contracts\View\View
      */
     public function index(): View
     {
@@ -41,35 +45,30 @@ class HomeController extends Controller
         return view('create', compact('tags'));
     }
 
-    public function store(Request $request)
+    /**
+     * Create new memo
+     * @param MemoRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(MemoRequest $request): RedirectResponse
     {
-        $posts = $request->all();
-        $request->validate(['content' => 'required']);
+        try {
+            $posts = $request->all();
 
-        //===== トランザクション開始 =====
-        DB::transaction(function() use($posts) {
-            // メモIDをinsertして取得
-            $memo_id = Memo::insertGetId(['content' => $posts['content'], 'user_id' => \Auth::id()]);
-            $tag_exists = Tag::where('user_id', '=', \Auth::id())->where('name', '=', $posts['new_tag'])
-            ->exists();
-            // 新規タグが入力されているかチェック
-            // 新規タグが既にtagsテーブルに存在するのかチェック
-            if( !empty($posts['new_tag']) && !$tag_exists ) {
-                // 新規タグが既に存在しなければ、tagsテーブルにinsertIDを取得
-                $tag_id = Tag::insertGetId(['user_id' => \Auth::id(), 'name' => $posts['new_tag']]);
-                // memo_tagsにinsertして、メモとタグを紐づける
-                MemoTag::insert(['memo_id' => $memo_id, 'tag_id' => $tag_id]);
-            }
-            // 既存タグが紐づけられた場合
-            if(!empty($posts['tags'][0])){
-                foreach($posts['tags'] as $tag){
-                    MemoTag::insert(['memo_id' => $memo_id, 'tag_id' => $tag]);
-                }
-            }
-        });
-        // ===== トランザクション終了 =====
+            DB::transaction(function() use($posts) {
+                $authId = \Auth::id();
+                $memo_id = $this->memoService->createNewMemoGetId($posts, $authId);
+                $tag_exists = $this->tagService->checkIfTagExists($authId, $posts['new_tag']);
+            
+                $this->tagService->attachTagsToMemo($posts, $memo_id, $tag_exists, $authId);
+            });
 
-        return redirect( route('home') );
+            return redirect(route('home'));
+
+        } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return response()->view('error', ['message' => 'データの保存中にエラーが発生しました。'], 500);
+        }
     }
 
     /**

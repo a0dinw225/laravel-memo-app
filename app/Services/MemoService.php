@@ -25,6 +25,7 @@ class MemoService
    *
    * @param int $memoId
    * @param int $authId
+   * @return array
    */
   public function getUserMemo(int $memoId, int $authId): array
   {
@@ -54,5 +55,17 @@ class MemoService
         'memo_with_tags' => $memoWithTagsData,
         'memo_tag_ids' => $memoTagIds,
     ];
+  }
+  
+  /**
+   * Create new memo
+   *
+   * @param array|null $posts
+   * @param int $authId
+   * @return int
+   */
+  public function createNewMemoGetId(?array $posts, int $authId): int
+  {
+    return $this->memoRepository->insertMemoGetId($posts, $authId);
   }
 }
