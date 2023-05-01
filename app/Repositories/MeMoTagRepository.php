@@ -32,4 +32,15 @@ class MemoTagRepository
             'tag_id' => $tagId,
         ]);
     }
+
+    /**
+     * delete memo tag
+     *
+     * @param int $memoId
+     * @return void
+     */
+    public function deleteMemoTag(int $memoId): void
+    {
+        $this->memoTag::where('memo_id', $memoId)->delete();
+    }
 }

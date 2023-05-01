@@ -68,4 +68,16 @@ class MemoService
   {
     return $this->memoRepository->insertMemoGetId($posts, $authId);
   }
+
+  /**
+   * Update memo
+   *
+   * @param int $memoId
+   * @param string $memoContext
+   * @return void
+   */
+  public function updateMemo(int $memoId, string $memoContext): void
+  {
+    $this->memoRepository->updateMemo($memoId, $memoContext);
+  }
 }

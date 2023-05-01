@@ -7,10 +7,9 @@ use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\MemoRequest;
 use Illuminate\Contracts\View\View;
 use App\Models\Memo;
-use App\Models\Tag;
-use App\Models\MemoTag;
 use App\Services\TagService;
 use App\Services\MemoService;
+use App\Services\MemoTagService;
 use DB;
 
 class HomeController extends Controller
@@ -21,15 +20,21 @@ class HomeController extends Controller
     /** @var MemoService */
     protected $memoService;
 
+    /** @var MemoTagService */
+    protected $memoTagService;
+
     /**
      * Create a new controller instance.
      *
-     * @return void
+     * @param TagService $tagService
+     * @param MemoService $memoService
+     * @param MemoTagService $memoTagService
      */
-    public function __construct(TagService $tagService, MemoService $memoService)
+    public function __construct(TagService $tagService, MemoService $memoService, MemoTagService $memoTagService)
     {
         $this->tagService = $tagService;
         $this->memoService = $memoService;
+        $this->memoTagService = $memoTagService;
         $this->middleware('auth');
     }
 
@@ -57,10 +62,10 @@ class HomeController extends Controller
 
             DB::transaction(function() use($posts) {
                 $authId = \Auth::id();
-                $memo_id = $this->memoService->createNewMemoGetId($posts, $authId);
-                $tag_exists = $this->tagService->checkIfTagExists($authId, $posts['new_tag']);
-            
-                $this->tagService->attachTagsToMemo($posts, $memo_id, $tag_exists, $authId);
+                $memoId = $this->memoService->createNewMemoGetId($posts, $authId);
+                $tagExists = $this->tagService->checkIfTagExists($authId, $posts['new_tag']);
+
+                $this->tagService->attachTagsToMemo($posts, $memoId, $tagExists, $authId);
             });
 
             return redirect(route('home'));
@@ -87,28 +92,21 @@ class HomeController extends Controller
         return view('edit', compact('editMemo', 'memoTagIds', 'tags'));
     }
 
-    public function update(Request $request)
+    public function update(MemoRequest $request): RedirectResponse
     {
         $posts = $request->all();
-        $request->validate(['content' => 'required']);
 
         //===== トランザクション開始 =====
         DB::transaction(function () use($posts) {
-            Memo::where('id', $posts['memo_id'])->update(['content' => $posts['content']]);
-            MemoTag::where('memo_id', '=', $posts['memo_id'])->delete();
-            foreach($posts['tags'] as $tag) {
-                MemoTag::insert(['memo_id' => $posts['memo_id'], 'tag_id' => $tag]);
-            }
-            $tag_exists = Tag::where('user_id', '=', \Auth::id())->where('name', '=', $posts['new_tag'])
-            ->exists();
-            // 新規タグが入力されているかチェック
-            // 新規タグが既にtagsテーブルに存在するのかチェック
-            if( !empty($posts['new_tag']) && !$tag_exists ) {
-                // 新規タグが既に存在しなければ、tagsテーブルにinsertIDを取得
-                $tag_id = Tag::insertGetId(['user_id' => \Auth::id(), 'name' => $posts['new_tag']]);
-                // memo_tagsにinsertして、メモとタグを紐づける
-                MemoTag::insert(['memo_id' => $posts['memo_id'], 'tag_id' => $tag_id]);
-            }
+            $authId = \Auth::id();
+            $memoId = $posts['memo_id'];
+
+            $this->memoService->updateMemo($memoId, $posts['content']);
+            $this->memoTagService->deleteMemoTag($memoId);
+
+            $tagExists = $this->tagService->checkIfTagExists($authId, $posts['new_tag']);
+
+            $this->tagService->attachTagsToMemo($posts, $memoId, $tagExists, $authId);
         });
         // ===== トランザクション終了 =====
 

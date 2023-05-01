@@ -52,4 +52,19 @@ class MemoRepository
             'user_id' => $authId,
         ]);
     }
+
+    /**
+     * update memo
+     *
+     * @param int $memoId
+     * @param string $memoContext
+     * @return void
+     */
+    public function updateMemo(int $memoId, string $memoContext): void
+    {
+        $this->memo::where('id', $memoId)
+                    ->update([
+                        'content' => $memoContext,
+                    ]);
+    }
 }
