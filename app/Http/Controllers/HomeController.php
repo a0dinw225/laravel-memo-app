@@ -81,7 +81,7 @@ class HomeController extends Controller
         $authId = \Auth::id();
         $tags = $this->tagService->getUserTags($authId);
         $getMemoTags = $this->memoService->getMemoTags($id, $authId);
-        $editMemo = $getMemoTags['memo_with_tags'][0];
+        $editMemo = $getMemoTags['memo_with_tags'];
         $memoTagIds = $getMemoTags['memo_tag_ids'];
 
         return view('edit', compact('editMemo', 'memoTagIds', 'tags'));

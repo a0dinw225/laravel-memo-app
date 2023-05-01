@@ -28,8 +28,8 @@ class MemoRepository
     public function getUserMemoWithTagsById(int $memoId, int $userId): array
     {
         return $this->memo
-                ->join('memo_tags', 'memo_tags.memo_id', '=', 'memos.id')
-                ->join('tags', 'memo_tags.tag_id', '=', 'tags.id')
+                ->leftJoin('memo_tags', 'memo_tags.memo_id', '=', 'memos.id')
+                ->leftJoin('tags', 'memo_tags.tag_id', '=', 'tags.id')
                 ->where('memos.user_id', $userId)
                 ->where('memos.id', $memoId)
                 ->whereNull('memos.deleted_at')
