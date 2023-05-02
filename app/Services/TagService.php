@@ -47,7 +47,7 @@ class TagService {
     public function checkIfTagExists(int $authId, ?string $tagName): bool
     {
         $tagExists = $this->tagRepository->checkTagExists($authId, $tagName);
-        return !$tagExists;
+        return $tagExists;
     }
 
     /**
