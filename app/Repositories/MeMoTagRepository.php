@@ -11,6 +11,7 @@ class MemoTagRepository
 
     /**
      * MemoTagRepository constructor.
+     *
      * @param MemoTag $memoTag
      */
     public function __construct(MemoTag $memoTag)

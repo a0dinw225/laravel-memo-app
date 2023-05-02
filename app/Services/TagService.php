@@ -29,7 +29,8 @@ class TagService {
      * @param int $authId
      * @return array
      */
-    public function getUserTags(int $authId): array {
+    public function getUserTags(int $authId): array
+    {
         $userTags = $this->tagRepository->getUserTags($authId);
 
         return [

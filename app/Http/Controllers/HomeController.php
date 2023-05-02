@@ -52,6 +52,7 @@ class HomeController extends Controller
 
     /**
      * Create new memo
+     *
      * @param MemoRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -78,6 +79,7 @@ class HomeController extends Controller
 
     /**
      * Edit screen for memo
+     *
      * @param int $id
      * @return \Illuminate\Contracts\View\View
      */
@@ -92,6 +94,12 @@ class HomeController extends Controller
         return view('edit', compact('editMemo', 'memoTagIds', 'tags'));
     }
 
+    /**
+     * Update memo
+     *
+     * @param MemoRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(MemoRequest $request): RedirectResponse
     {
         $posts = $request->all();
@@ -113,11 +121,16 @@ class HomeController extends Controller
         return redirect( route('home') );
     }
 
-    public function destory(Request $request)
+    /**
+     * Destroy memo
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destory(Request $request): RedirectResponse
     {
         $posts = $request->all();
-
-        Memo::where('id', $posts['memo_id'])->update(['deleted_at' => date("Y-m-d H:i:s", time())]);
+        $this->memoService->deleteMemo($posts['memo_id']);
 
         return redirect( route('home') );
     }

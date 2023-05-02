@@ -38,7 +38,7 @@ class TagRepository
    * get tag ids
    *
    * @param int $userId
-   * @param array $tagNames
+   * @param array|null $tagNames
    * @return array
    */
     public function getTagIds(int $authId, ?array $tagNames): array
@@ -51,7 +51,7 @@ class TagRepository
     }
 
    /**
-    * insert user tags
+    * insert tag and get id
     *
     * @param string $tagName
     * @param int $userId
@@ -66,7 +66,7 @@ class TagRepository
     }
 
     /**
-     * Check tag exists
+     * check tag exists
      * @param int $userId
      * @param string|null $tagName
      * @return bool

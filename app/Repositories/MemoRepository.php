@@ -11,6 +11,7 @@ class MemoRepository
 
     /**
      * MemoRepository constructor.
+     *
      * @param Memo $memo
      */
     public function __construct(Memo $memo)
@@ -39,11 +40,11 @@ class MemoRepository
     }
 
     /**
-     * insert user memos
+     * insert memo
      *
      * @param array $posts
      * @param int $userId
-     * @return array
+     * @return int
      */
     public function insertMemoGetId(array $posts, int $authId): int
     {
@@ -66,5 +67,18 @@ class MemoRepository
                     ->update([
                         'content' => $memoContext,
                     ]);
+    }
+
+    /**
+     * delete memo
+     *
+     * @param int $memoId
+     * @return void
+     */
+    public function deleteMemo(int $memoId): void
+    {
+        $this->memo::where('id', $memoId)->update([
+            'deleted_at' => date("Y-m-d H:i:s", time())
+        ]);
     }
 }
