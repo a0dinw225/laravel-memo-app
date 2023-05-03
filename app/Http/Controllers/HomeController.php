@@ -6,36 +6,38 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\MemoRequest;
 use Illuminate\Contracts\View\View;
-use App\Models\Memo;
-use App\Services\TagService;
-use App\Services\MemoService;
-use App\Services\MemoTagService;
+use App\Services\TagServiceInterface;
+use App\Services\MemoServiceInterface;
+use App\Services\MemoTagServiceInterface;
+use Exception;
 use DB;
 
 class HomeController extends Controller
 {
-    /** @var TagService */
+    /** @var TagServiceInterface */
     protected $tagService;
 
-    /** @var MemoService */
+    /** @var MemoServiceInterface */
     protected $memoService;
 
-    /** @var MemoTagService */
+    /** @var MemoTagServiceInterface */
     protected $memoTagService;
 
     /**
-     * Create a new controller instance.
+     * HomeController constructor.
      *
-     * @param TagService $tagService
-     * @param MemoService $memoService
-     * @param MemoTagService $memoTagService
+     * @param TagServiceInterface $tagService
+     * @param MemoServiceInterface $memoService
+     * @param MemoTagServiceInterface $memoTagService
      */
-    public function __construct(TagService $tagService, MemoService $memoService, MemoTagService $memoTagService)
-    {
+    public function __construct(
+        TagServiceInterface $tagService,
+        MemoServiceInterface $memoService,
+        MemoTagServiceInterface $memoTagService
+    ) {
         $this->tagService = $tagService;
         $this->memoService = $memoService;
         $this->memoTagService = $memoTagService;
-        $this->middleware('auth');
     }
 
     /**
@@ -71,9 +73,8 @@ class HomeController extends Controller
 
             return redirect(route('home'));
 
-        } catch (\Exception $e) {
-            \Log::error($e->getMessage());
-            return response()->view('error', ['message' => 'データの保存中にエラーが発生しました。'], 500);
+        } catch (Exception $e) {
+            return back()->withInput()->withErrors(['message' => 'データの保存中にエラーが発生しました。']);
         }
     }
 
@@ -102,23 +103,25 @@ class HomeController extends Controller
      */
     public function update(MemoRequest $request): RedirectResponse
     {
-        $posts = $request->all();
+        try {
+            $posts = $request->all();
 
-        //===== トランザクション開始 =====
-        DB::transaction(function () use($posts) {
-            $authId = \Auth::id();
-            $memoId = $posts['memo_id'];
+            DB::transaction(function () use($posts) {
+                $authId = \Auth::id();
+                $memoId = $posts['memo_id'];
 
-            $this->memoService->updateMemo($memoId, $posts['content']);
-            $this->memoTagService->deleteMemoTag($memoId);
+                $this->memoService->updateMemo($memoId, $posts['content']);
+                $this->memoTagService->deleteMemoTag($memoId);
 
-            $tagExists = $this->tagService->checkIfTagExists($authId, $posts['new_tag']);
+                $tagExists = $this->tagService->checkIfTagExists($authId, $posts['new_tag']);
 
-            $this->tagService->attachTagsToMemo($posts, $memoId, $tagExists, $authId);
-        });
-        // ===== トランザクション終了 =====
+                $this->tagService->attachTagsToMemo($posts, $memoId, $tagExists, $authId);
+            });
 
-        return redirect( route('home') );
+            return redirect( route('home') );
+        } catch (Exception $e) {
+            return back()->withInput()->withErrors(['message' => 'データの保存中にエラーが発生しました。']);
+        }
     }
 
     /**

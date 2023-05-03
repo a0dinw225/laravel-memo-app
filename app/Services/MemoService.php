@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Repositories\MemoRepository;
 
-class MemoService
+class MemoService implements MemoServiceInterface
 {
     /** @var MemoRepository */
     protected $memoRepository;

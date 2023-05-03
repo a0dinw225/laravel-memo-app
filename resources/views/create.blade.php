@@ -5,6 +5,11 @@
         <div class="card-header">新規メモ作成</div>
         <form class="card-body my-card-body" action="{{ route('store') }}" method="POST">
             @csrf
+            @error('message')
+                <div class="alert alert-danger mt-3">
+                    {{ $message }}
+                </div>
+            @enderror
             <div class="form-group">
                 <textarea class="form-control" name="content" rows="3" placeholder="ここにメモを入力"></textarea>
             </div>
