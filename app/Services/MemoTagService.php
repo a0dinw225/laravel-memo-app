@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Repositories\MemoTagRepository;
 
-class MemoTagService
+class MemoTagService implements MemoTagServiceInterface
 {
     /** @var MemoTagRepository */
     protected $memoTagRepository;

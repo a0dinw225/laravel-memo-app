@@ -5,7 +5,8 @@ namespace App\Services;
 use App\Repositories\TagRepository;
 use App\Repositories\MemoTagRepository;
 
-class TagService {
+class TagService implements TagServiceInterface
+{
     /** @var TagRepository */
     protected $tagRepository;
 

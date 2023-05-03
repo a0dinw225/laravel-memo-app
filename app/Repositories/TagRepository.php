@@ -4,27 +4,27 @@ namespace App\Repositories;
 
 use App\Models\Tag;
 
-class TagRepository
+class TagRepository implements TagRepositoryInterface
 {
-  /** @var Tag */
+    /** @var Tag */
     protected $tag;
 
     /**
-   * TagRepository constructor.
-   *
-   * @param Tag $tag
-   */
+     * TagRepository constructor.
+     *
+     * @param Tag $tag
+     */
     public function __construct(Tag $tag)
     {
         $this->tag = $tag;
     }
 
     /**
-   * Find user tags
-   *
-   * @param int $userId
-   * @return array
-   */
+     * Get user tags
+     *
+     * @param int $userId
+     * @return array
+     */
     public function getUserTags(int $userId): array
     {
         return $this->tag::where('user_id', $userId)
@@ -35,12 +35,12 @@ class TagRepository
     }
 
     /**
-   * get tag ids
-   *
-   * @param int $userId
-   * @param array|null $tagNames
-   * @return array
-   */
+     * get tag ids
+     *
+     * @param int $userId
+     * @param array|null $tagNames
+     * @return array
+     */
     public function getTagIds(int $authId, ?array $tagNames): array
     {
         return $this->tag::where('user_id', $authId)
@@ -50,13 +50,13 @@ class TagRepository
                         ->toArray();
     }
 
-   /**
-    * insert tag and get id
-    *
-    * @param string $tagName
-    * @param int $userId
-    * @return int
-    */
+    /**
+     * insert tag and get id
+     *
+     * @param string $tagName
+     * @param int $userId
+     * @return int
+     */
     public function insertTagGetId(string $tagName, int $authId): int
     {
         return $this->tag->insertGetId([
@@ -67,6 +67,7 @@ class TagRepository
 
     /**
      * check tag exists
+     *
      * @param int $userId
      * @param string|null $tagName
      * @return bool

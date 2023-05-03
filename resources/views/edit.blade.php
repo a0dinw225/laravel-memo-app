@@ -16,6 +16,11 @@
         </div>
         <form class="card-body my-card-body" action="{{ route('update') }}" method="POST">
             @csrf
+            @error('message')
+                <div class="alert alert-danger mt-3">
+                    {{ $message }}
+                </div>
+            @enderror
             <input type="hidden" name="memo_id" value="{{ $editMemo[0]['id'] }}" />
             <div class="form-group mb-3">
                 <textarea class="form-control" name="content" rows="3" placeholder="ここにメモを入力">{{ $editMemo[0]['content'] }}</textarea>
