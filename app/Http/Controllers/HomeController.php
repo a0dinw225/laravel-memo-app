@@ -35,6 +35,8 @@ class HomeController extends Controller
         MemoServiceInterface $memoService,
         MemoTagServiceInterface $memoTagService
     ) {
+        $this->middleware('auth');
+
         $this->tagService = $tagService;
         $this->memoService = $memoService;
         $this->memoTagService = $memoTagService;
@@ -46,8 +48,8 @@ class HomeController extends Controller
      */
     public function index(): View
     {
-        $auth_id = \Auth::id();
-        $tags = $this->tagService->getUserTags($auth_id);
+        $authId = \Auth::id();
+        $tags = $this->tagService->getUserTags($authId);
 
         return view('create', compact('tags'));
     }
