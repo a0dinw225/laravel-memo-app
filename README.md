@@ -94,3 +94,69 @@ MySQL接続
 mysql -u root -p
 ```
 ※パスワードは`.env`の`DB_PASSWORD`
+
+## PHPUnit　テスト準備
+DBコンテナに入り、MySQL接続しテスト用DBを作成
+```
+create database laravel_memo_app_test;
+```
+
+`.env`をコピーして、`.env.testing`を作成  
+`.env.testing`の変更箇所
+```
+APP_ENV=testing
+APP_KEY= 　#APP_KEYを空にする
+DB_CONNECTION=mysql_test
+DB_DATABASE=laravel_memo_app_test
+```
+
+`.env.testing`のAPP_KEY生成のコマンド
+```
+php artisan key:generate --show --env=testing
+```
+表示されたキーをコピーし、`.env.testing`のAPP_KEYに設定する
+
+Dockerを再起動
+```
+docker-compose restart
+```
+
+DBテスト用コンテナに入る
+```
+docker exec -it myapp_testing /bin/bash
+```
+
+テスト用DBのマイグレーションを実行
+```
+php artisan migrate --env=testing
+```
+
+## PHPUnit テスト実行手順
+
+テスト用のコンテナに入る
+```
+docker exec -it myapp_testing /bin/bash
+```
+※注意  
+APPコンテナに入り、テストを行うと開発環境用DBのデータがリセットされてしまう  
+必ずテスト用コンテナ内でテストする
+
+テスト実行
+```
+./vendor/bin/phpunit
+```
+
+指定ファイルのみ実行
+```
+./vendor/bin/phpunit tests/Feature/MemoRepositoryTest.php
+```
+
+指定の関数のみ実行
+```
+./vendor/bin/phpunit --filter it_can_get_user_memo_with_tags_by_id
+```
+
+指定ファイルの指定の関数のみ実行
+```
+./vendor/bin/phpunit --filter MemoRepositoryTest::it_can_get_user_memo_with_tags_by_id
+```
