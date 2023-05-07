@@ -148,7 +148,7 @@ APPコンテナに入り、テストを行うと開発環境用DBのデータが
 
 指定ファイルのみ実行
 ```
-./vendor/bin/phpunit tests/Feature/MemoRepositoryTest.php
+./vendor/bin/phpunit tests/Unit/MemoRepositoryTest.php
 ```
 
 指定の関数のみ実行
@@ -158,5 +158,5 @@ APPコンテナに入り、テストを行うと開発環境用DBのデータが
 
 指定ファイルの指定の関数のみ実行
 ```
-./vendor/bin/phpunit --filter MemoRepositoryTest::it_can_get_user_memo_with_tags_by_id
+./vendor/bin/phpunit --filter it_can_get_user_memo_with_tags_by_id tests/Unit/MemoRepositoryTest.php
 ```
