@@ -42,8 +42,8 @@ class MemoRepositoryTest extends TestCase
         $result = $this->memoRepository->getUserMemoWithTagsById($memo->id, $user->id);
 
         $this->assertIsArray($result);
-        $this->assertEquals($memo->id, $result[0]['id']);
-        $this->assertEquals($tag->id, $result[0]['tag_id']);
+        $this->assertSame($memo->id, $result[0]['id']);
+        $this->assertSame($tag->id, $result[0]['tag_id']);
     }
 
     /** @test */
