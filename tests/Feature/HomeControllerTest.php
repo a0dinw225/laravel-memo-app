@@ -90,4 +90,169 @@ class HomeControllerTest extends TestCase
             ->assertViewIs('create')
             ->assertViewHasAll(['tags']);
     }
+
+    /** @test */
+    public function it_can_create_a_new_memo()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $memoContent = $this->faker->text;
+        $newTag = $this->faker->word;
+        $tagIds = [1, 2, 3];
+
+        $this->memoService->expects($this->once())
+            ->method('createNewMemoGetId')
+            ->with([
+                'content' => $memoContent,
+                'new_tag' => $newTag,
+                'tags' => $tagIds
+            ], $user->id)
+            ->willReturn(1);
+
+            $this->tagService->expects($this->once())
+            ->method('checkIfTagExists')
+            ->with($user->id, $newTag)
+            ->willReturn(false);
+
+        $this->tagService->expects($this->once())
+            ->method('attachTagsToMemo')
+            ->with([
+                'content' => $memoContent,
+                'new_tag' => $newTag,
+                'tags' => $tagIds
+            ], 1, false, $user->id);
+
+        $response = $this->post(route('store'), [
+            'content' => $memoContent,
+            'new_tag' => $newTag,
+            'tags' => $tagIds,
+        ]);
+
+        $response->assertStatus(302)
+            ->assertRedirect(route('home'));
+    }
+
+    /** @test */
+    public function it_can_create_a_new_memo_with_no_tags()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $memoContent = $this->faker->text;
+        $newTag = $this->faker->word;
+        $tagIds = [];
+
+        $this->memoService->expects($this->once())
+            ->method('createNewMemoGetId')
+            ->with([
+                'content' => $memoContent,
+                'new_tag' => $newTag,
+                'tags' => $tagIds
+            ], $user->id)
+            ->willReturn(1);
+
+        $this->tagService->expects($this->once())
+            ->method('checkIfTagExists')
+            ->with($user->id, $newTag)
+            ->willReturn(false);
+
+        $this->tagService->expects($this->once())
+            ->method('attachTagsToMemo')
+            ->with([
+                'content' => $memoContent,
+                'new_tag' => $newTag,
+                'tags' => $tagIds
+            ], 1, false, $user->id);
+
+        $response = $this->post(route('store'), [
+            'content' => $memoContent,
+            'new_tag' => $newTag,
+            'tags' => $tagIds,
+        ]);
+
+        $response->assertStatus(302)
+            ->assertRedirect(route('home'));
+    }
+
+    /** @test */
+    public function it_can_create_a_new_memo_with_no_new_tag()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $memoContent = $this->faker->text;
+        $newTag = '';
+        $tagIds = [1, 2, 3];
+
+        $this->memoService->expects($this->once())
+            ->method('createNewMemoGetId')
+            ->with([
+                'content' => $memoContent,
+                'new_tag' => $newTag,
+                'tags' => $tagIds
+            ], $user->id)
+            ->willReturn(1);
+
+        $this->tagService->expects($this->once())
+            ->method('checkIfTagExists');
+
+        $this->tagService->expects($this->once())
+            ->method('attachTagsToMemo')
+            ->with([
+                'content' => $memoContent,
+                'new_tag' => $newTag,
+                'tags' => $tagIds
+            ], 1, false, $user->id);
+
+        $response = $this->post(route('store'), [
+            'content' => $memoContent,
+            'new_tag' => $newTag,
+            'tags' => $tagIds,
+        ]);
+
+        $response->assertStatus(302)
+            ->assertRedirect(route('home'));
+    }
+
+    /** @test */
+    public function it_can_create_a_new_memo_with_no_new_tag_and_no_tags()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $memoContent = $this->faker->text;
+        $newTag = '';
+        $tagIds = [];
+
+        $this->memoService->expects($this->once())
+            ->method('createNewMemoGetId')
+            ->with([
+                'content' => $memoContent,
+                'new_tag' => $newTag,
+                'tags' => $tagIds
+            ], $user->id)
+            ->willReturn(1);
+
+        $this->tagService->expects($this->once())
+            ->method('checkIfTagExists');
+
+        $this->tagService->expects($this->once())
+            ->method('attachTagsToMemo')
+            ->with([
+                'content' => $memoContent,
+                'new_tag' => $newTag,
+                'tags' => $tagIds
+            ], 1, false, $user->id);
+
+        $response = $this->post(route('store'), [
+            'content' => $memoContent,
+            'new_tag' => $newTag,
+            'tags' => $tagIds,
+        ]);
+
+        $response->assertStatus(302)
+            ->assertRedirect(route('home'));
+    }
+
 }
