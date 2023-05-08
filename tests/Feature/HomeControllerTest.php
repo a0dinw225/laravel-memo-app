@@ -44,6 +44,14 @@ class HomeControllerTest extends TestCase
         $this->app->instance(MemoTagServiceInterface::class, $this->memoTagService);
     }
 
+    /** @test */
+    public function it_can_show_the_application_dashboard_with_no_user()
+    {
+        $response = $this->get(route('home'));
+
+        $response->assertStatus(302)
+            ->assertRedirect(route('login'));
+    }
 
     /** @test */
     public function it_can_show_the_application_dashboard()
