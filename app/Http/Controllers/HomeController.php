@@ -127,12 +127,12 @@ class HomeController extends Controller
     }
 
     /**
-     * Destroy memo
+     * Delete memo
      *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Request $request): RedirectResponse
+    public function delete(Request $request): RedirectResponse
     {
         $posts = $request->all();
         $this->memoService->deleteMemo($posts['memo_id']);

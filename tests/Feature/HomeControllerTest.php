@@ -433,7 +433,7 @@ class HomeControllerTest extends TestCase
             ->method('deleteMemo')
             ->with($memoId);
 
-        $response = $this->post(route('destroy'), $postData);
+        $response = $this->post(route('delete'), $postData);
 
         $response->assertStatus(302)
             ->assertRedirect(route('home'));
