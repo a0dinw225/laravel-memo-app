@@ -416,4 +416,27 @@ class HomeControllerTest extends TestCase
             ->assertRedirect(route('home'));
     }
 
+    /** @test */
+    public function it_can_delete_a_memo()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $memo = Memo::factory()->create(['user_id' => $user->id]);
+        $memoId = $memo->id;
+
+        $postData = [
+            'memo_id' => $memoId,
+        ];
+
+        $this->memoService->expects($this->once())
+            ->method('deleteMemo')
+            ->with($memoId);
+
+        $response = $this->post(route('destroy'), $postData);
+
+        $response->assertStatus(302)
+            ->assertRedirect(route('home'));
+    }
+
 }
