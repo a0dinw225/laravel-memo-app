@@ -319,4 +319,101 @@ class HomeControllerTest extends TestCase
             ->assertViewHasAll(['editMemo', 'memoTagIds', 'tags']);
     }
 
+    /** @test */
+    public function it_can_update_a_memo_with_new_tag_and_tags()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $memo = Memo::factory()->create(['user_id' => $user->id]);
+        $memoId = $memo->id;
+
+        $tags = Tag::factory()->count(3)->create(['user_id' => $user->id]);
+        $checkedTags = $tags->pluck('id')->toArray();
+
+        foreach ($tags as $tag) {
+            MemoTag::factory()->create(['memo_id' => $memo->id, 'tag_id' => $tag->id]);
+        }
+
+        $updatedContent = 'Updated memo content';
+        $newTagName = 'New Tag Name';
+
+        $postData = [
+            'content' => $updatedContent,
+            'new_tag' => $newTagName,
+            'tags' => $checkedTags,
+            'memo_id' => $memoId,
+        ];
+
+        $this->memoService->expects($this->once())
+            ->method('updateMemo')
+            ->with($memoId, $updatedContent);
+
+        $this->memoTagService->expects($this->once())
+            ->method('deleteMemoTag')
+            ->with($memoId);
+
+        $this->tagService->expects($this->once())
+            ->method('checkIfTagExists')
+            ->with($user->id, $newTagName)
+            ->willReturn(true);
+
+        $this->tagService->expects($this->once())
+            ->method('attachTagsToMemo')
+            ->with($postData, $memoId, true, $user->id);
+
+        $response = $this->post(route('update'), $postData);
+
+        $response->assertStatus(302)
+            ->assertRedirect(route('home'));
+    }
+
+    /** @test */
+    public function it_can_update_a_memo_with_new_tag_and_no_tags()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $memo = Memo::factory()->create(['user_id' => $user->id]);
+        $memoId = $memo->id;
+
+        $tags = Tag::factory()->count(3)->create(['user_id' => $user->id]);
+
+        foreach ($tags as $tag) {
+            MemoTag::factory()->create(['memo_id' => $memo->id, 'tag_id' => $tag->id]);
+        }
+
+        $updatedContent = 'Updated memo content';
+        $newTagName = 'New Tag Name';
+
+        $postData = [
+            'content' => $updatedContent,
+            'new_tag' => $newTagName,
+            'tags' => [],
+            'memo_id' => $memoId,
+        ];
+
+        $this->memoService->expects($this->once())
+            ->method('updateMemo')
+            ->with($memoId, $updatedContent);
+
+        $this->memoTagService->expects($this->once())
+            ->method('deleteMemoTag')
+            ->with($memoId);
+
+        $this->tagService->expects($this->once())
+            ->method('checkIfTagExists')
+            ->with($user->id, $newTagName)
+            ->willReturn(true);
+
+        $this->tagService->expects($this->once())
+            ->method('attachTagsToMemo')
+            ->with($postData, $memoId, true, $user->id);
+
+        $response = $this->post(route('update'), $postData);
+
+        $response->assertStatus(302)
+            ->assertRedirect(route('home'));
+    }
+
 }
