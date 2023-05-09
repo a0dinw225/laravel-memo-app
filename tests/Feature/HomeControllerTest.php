@@ -11,6 +11,8 @@ use App\Services\MemoTagServiceInterface;
 use App\Services\TagServiceInterface;
 use App\Models\User;
 use App\Models\Tag;
+use App\Models\Memo;
+use App\Models\MemoTag;
 
 class HomeControllerTest extends TestCase
 {
@@ -253,6 +255,68 @@ class HomeControllerTest extends TestCase
 
         $response->assertStatus(302)
             ->assertRedirect(route('home'));
+    }
+
+    /** @test */
+    public function it_can_edit_a_memo()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $memo = Memo::factory()->create(['user_id' => $user->id]);
+        $tags = Tag::factory()->count(3)->create(['user_id' => $user->id]);
+
+        foreach ($tags as $tag) {
+            MemoTag::factory()->create(['memo_id' => $memo->id, 'tag_id' => $tag->id]);
+        }
+
+        $this->tagService->expects($this->once())
+            ->method('getUserTags')
+            ->with($user->id)
+            ->willReturn($tags->toArray());
+
+        $this->memoService->expects($this->once())
+            ->method('getMemoTags')
+            ->with($memo->id, $user->id)
+            ->willReturn([
+                'memo_with_tags' => [$memo->toArray()],
+                'memo_tag_ids' => $tags->pluck('id')->all(),
+            ]);
+
+        $response = $this->get(route('edit', ['id' => $memo->id]));
+
+        $response->assertStatus(200)
+            ->assertViewIs('edit')
+            ->assertViewHasAll(['editMemo', 'memoTagIds', 'tags']);
+    }
+
+    /** @test */
+    public function it_can_edit_a_memo_with_no_tags()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $memo = Memo::factory()->create(['user_id' => $user->id]);
+        $tags = Tag::factory()->count(3)->create(['user_id' => $user->id]);
+
+        $this->tagService->expects($this->once())
+            ->method('getUserTags')
+            ->with($user->id)
+            ->willReturn($tags->toArray());
+
+        $this->memoService->expects($this->once())
+            ->method('getMemoTags')
+            ->with($memo->id, $user->id)
+            ->willReturn([
+                'memo_with_tags' => [$memo->toArray()],
+                'memo_tag_ids' => [],
+            ]);
+
+        $response = $this->get(route('edit', ['id' => $memo->id]));
+
+        $response->assertStatus(200)
+            ->assertViewIs('edit')
+            ->assertViewHasAll(['editMemo', 'memoTagIds', 'tags']);
     }
 
 }
