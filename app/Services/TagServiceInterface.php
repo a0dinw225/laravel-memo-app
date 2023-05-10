@@ -7,19 +7,19 @@ interface TagServiceInterface
     /**
      * Get user tags
      *
-     * @param int $authId
+     * @param int $userId
      * @return array
      */
-    public function getUserTags(int $authId): array;
+    public function getUserTags(int $userId): array;
 
     /**
      * Check tag exists
      *
-     * @param int $authId
+     * @param int $userId
      * @param string $tagName
      * @return bool
      */
-    public function checkIfTagExists(int $authId, ?string $tagName): bool;
+    public function checkIfTagExists(int $userId, ?string $tagName): bool;
 
     /**
      * Attach tags to memo
@@ -27,8 +27,8 @@ interface TagServiceInterface
      * @param array|null $posts
      * @param int $memoId
      * @param bool $tagExists
-     * @param int $authId
+     * @param int $userId
      * @return void
      */
-    public function attachTagsToMemo(?array $posts, int $memoId, bool $tagExists, int $authId): void;
+    public function attachTagsToMemo(?array $posts, int $memoId, bool $tagExists, int $userId): void;
 }

@@ -48,8 +48,8 @@ class HomeController extends Controller
      */
     public function index(): View
     {
-        $authId = \Auth::id();
-        $tags = $this->tagService->getUserTags($authId);
+        $currentUserIdId = \Auth::id();
+        $tags = $this->tagService->getUserTags($currentUserIdId);
 
         return view('create', compact('tags'));
     }
@@ -66,11 +66,11 @@ class HomeController extends Controller
             $posts = $request->all();
 
             DB::transaction(function() use($posts) {
-                $authId = \Auth::id();
-                $memoId = $this->memoService->createNewMemoGetId($posts, $authId);
-                $tagExists = $this->tagService->checkIfTagExists($authId, $posts['new_tag']);
+                $currentUserIdId = \Auth::id();
+                $memoId = $this->memoService->createNewMemoGetId($posts, $currentUserIdId);
+                $tagExists = $this->tagService->checkIfTagExists($currentUserIdId, $posts['new_tag']);
 
-                $this->tagService->attachTagsToMemo($posts, $memoId, $tagExists, $authId);
+                $this->tagService->attachTagsToMemo($posts, $memoId, $tagExists, $currentUserIdId);
             });
 
             return redirect(route('home'));
@@ -88,9 +88,9 @@ class HomeController extends Controller
      */
     public function edit(int $id): View
     {
-        $authId = \Auth::id();
-        $tags = $this->tagService->getUserTags($authId);
-        $getMemoTags = $this->memoService->getMemoTags($id, $authId);
+        $currentUserIdId = \Auth::id();
+        $tags = $this->tagService->getUserTags($currentUserIdId);
+        $getMemoTags = $this->memoService->getMemoTags($id, $currentUserIdId);
         $editMemo = $getMemoTags['memo_with_tags'];
         $memoTagIds = $getMemoTags['memo_tag_ids'];
 
@@ -109,15 +109,15 @@ class HomeController extends Controller
             $posts = $request->all();
 
             DB::transaction(function () use($posts) {
-                $authId = \Auth::id();
+                $currentUserIdId = \Auth::id();
                 $memoId = $posts['memo_id'];
 
                 $this->memoService->updateMemo($memoId, $posts['content']);
                 $this->memoTagService->deleteMemoTag($memoId);
 
-                $tagExists = $this->tagService->checkIfTagExists($authId, $posts['new_tag']);
+                $tagExists = $this->tagService->checkIfTagExists($currentUserIdId, $posts['new_tag']);
 
-                $this->tagService->attachTagsToMemo($posts, $memoId, $tagExists, $authId);
+                $this->tagService->attachTagsToMemo($posts, $memoId, $tagExists, $currentUserIdId);
             });
 
             return redirect( route('home') );
