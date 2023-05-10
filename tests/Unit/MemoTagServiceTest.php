@@ -37,6 +37,7 @@ class MemoTagServiceTest extends TestCase
         $memo = Memo::factory()->create(['user_id' => $user->id]);
         $tag = Tag::factory()->create(['user_id' => $user->id]);
         MemoTag::factory()->create([
+            'user_id' => $user->id,
             'memo_id' => $memo->id,
             'tag_id' => $tag->id,
         ]);
