@@ -41,9 +41,9 @@ class TagRepository implements TagRepositoryInterface
      * @param array|null $tagNames
      * @return array
      */
-    public function getTagIds(int $authId, ?array $tagNames): array
+    public function getTagIds(int $userId, ?array $tagNames): array
     {
-        return $this->tag::where('user_id', $authId)
+        return $this->tag::where('user_id', $userId)
                         ->whereIn('name', $tagNames)
                         ->whereNull('deleted_at')
                         ->pluck('id')
@@ -57,11 +57,11 @@ class TagRepository implements TagRepositoryInterface
      * @param int $userId
      * @return int
      */
-    public function insertTagGetId(string $tagName, int $authId): int
+    public function insertTagGetId(string $tagName, int $userId): int
     {
         return $this->tag->insertGetId([
             'name' => $tagName,
-            'user_id' => $authId,
+            'user_id' => $userId,
         ]);
     }
 

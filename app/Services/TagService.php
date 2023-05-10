@@ -27,12 +27,12 @@ class TagService implements TagServiceInterface
     /**
      * Get user tags
      *
-     * @param int $authId
+     * @param int $userId
      * @return array
      */
-    public function getUserTags(int $authId): array
+    public function getUserTags(int $userId): array
     {
-        $userTags = $this->tagRepository->getUserTags($authId);
+        $userTags = $this->tagRepository->getUserTags($userId);
 
         return [
             'user_tags' => $userTags,
@@ -42,13 +42,13 @@ class TagService implements TagServiceInterface
     /**
      * Check tag exists
      *
-     * @param int $authId
+     * @param int $userId
      * @param string $tagName
      * @return bool
      */
-    public function checkIfTagExists(int $authId, ?string $tagName): bool
+    public function checkIfTagExists(int $userId, ?string $tagName): bool
     {
-        $tagExists = $this->tagRepository->checkTagExists($authId, $tagName);
+        $tagExists = $this->tagRepository->checkTagExists($userId, $tagName);
         return $tagExists;
     }
 

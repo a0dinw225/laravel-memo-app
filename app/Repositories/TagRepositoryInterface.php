@@ -7,10 +7,10 @@ interface TagRepositoryInterface
     /**
      * Get user tags
      *
-     * @param int $authId
+     * @param int $userId
      * @return array
      */
-    public function getUserTags(int $authId): array;
+    public function getUserTags(int $userId): array;
 
     /**
      * get tag ids
@@ -19,7 +19,7 @@ interface TagRepositoryInterface
      * @param array|null $tagNames
      * @return array
      */
-    public function getTagIds(int $authId, ?array $tagNames): array;
+    public function getTagIds(int $userId, ?array $tagNames): array;
 
     /**
      * insert tag and get id
@@ -28,7 +28,7 @@ interface TagRepositoryInterface
      * @param int $userId
      * @return int
      */
-    public function insertTagGetId(string $tagName, int $authId): int;
+    public function insertTagGetId(string $tagName, int $userId): int;
 
     /**
      * check tag exists
@@ -37,5 +37,5 @@ interface TagRepositoryInterface
      * @param string|null $tagName
      * @return bool
      */
-    public function checkTagExists(int $authId, ?string $tagName): bool;
+    public function checkTagExists(int $userId, ?string $tagName): bool;
 }

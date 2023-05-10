@@ -46,11 +46,11 @@ class MemoRepository
      * @param int $userId
      * @return int
      */
-    public function insertMemoGetId(array $posts, int $authId): int
+    public function insertMemoGetId(array $posts, int $userId): int
     {
         return $this->memo::insertGetId([
             'content' => $posts['content'],
-            'user_id' => $authId,
+            'user_id' => $userId,
         ]);
     }
 
