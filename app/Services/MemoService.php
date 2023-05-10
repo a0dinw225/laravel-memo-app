@@ -24,12 +24,12 @@ class MemoService implements MemoServiceInterface
      * Get user memos
      *
      * @param int $memoId
-     * @param int $authId
+     * @param int $userId
      * @return array
      */
-    public function getUserMemo(int $memoId, int $authId): array
+    public function getUserMemo(int $memoId, int $userId): array
     {
-        $memo = $this->memoRepository->getUserMemoWithTagsById($memoId, $authId);
+        $memo = $this->memoRepository->getUserMemoWithTagsById($memoId, $userId);
 
         return [
         'memo' => $memo,
@@ -40,12 +40,12 @@ class MemoService implements MemoServiceInterface
      * Get memo tags
      *
      * @param int $memoId
-     * @param int $authId
+     * @param int $userId
      * @return array
      */
-    public function getMemoTags(int $memoId, int $authId): array
+    public function getMemoTags(int $memoId, int $userId): array
     {
-        $memoWithTagsData = $this->memoRepository->getUserMemoWithTagsById($memoId, $authId);
+        $memoWithTagsData = $this->memoRepository->getUserMemoWithTagsById($memoId, $userId);
         $memoTagIds = [];
 
         foreach ($memoWithTagsData as $memo) {
@@ -62,12 +62,12 @@ class MemoService implements MemoServiceInterface
      * Create new memo
      *
      * @param array|null $posts
-     * @param int $authId
+     * @param int $userId
      * @return int
      */
-    public function createNewMemoGetId(?array $posts, int $authId): int
+    public function createNewMemoGetId(?array $posts, int $userId): int
     {
-        return $this->memoRepository->insertMemoGetId($posts, $authId);
+        return $this->memoRepository->insertMemoGetId($posts, $userId);
     }
 
     /**
