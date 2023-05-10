@@ -83,6 +83,7 @@ class TagServiceTest extends TestCase
         ]);
 
         MemoTag::factory()->create([
+            'user_id' => $user->id,
             'memo_id' => $memo->id,
             'tag_id' => $tag->id,
         ]);
@@ -113,6 +114,7 @@ class TagServiceTest extends TestCase
         MemoTag::factory()->create([
             'memo_id' => $memo->id,
             'tag_id' => $tag->id,
+            'user_id' => $user->id,
         ]);
 
         $post = [

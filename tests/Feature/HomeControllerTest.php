@@ -267,7 +267,11 @@ class HomeControllerTest extends TestCase
         $tags = Tag::factory()->count(3)->create(['user_id' => $user->id]);
 
         foreach ($tags as $tag) {
-            MemoTag::factory()->create(['memo_id' => $memo->id, 'tag_id' => $tag->id]);
+            MemoTag::factory()->create([
+                'user_id' => $user->id,
+                'memo_id' => $memo->id,
+                'tag_id' => $tag->id,
+            ]);
         }
 
         $this->tagService->expects($this->once())
@@ -332,7 +336,11 @@ class HomeControllerTest extends TestCase
         $checkedTags = $tags->pluck('id')->toArray();
 
         foreach ($tags as $tag) {
-            MemoTag::factory()->create(['memo_id' => $memo->id, 'tag_id' => $tag->id]);
+            MemoTag::factory()->create([
+                'user_id' => $user->id,
+                'memo_id' => $memo->id,
+                'tag_id' => $tag->id,
+            ]);
         }
 
         $updatedContent = 'Updated memo content';
@@ -380,7 +388,11 @@ class HomeControllerTest extends TestCase
         $tags = Tag::factory()->count(3)->create(['user_id' => $user->id]);
 
         foreach ($tags as $tag) {
-            MemoTag::factory()->create(['memo_id' => $memo->id, 'tag_id' => $tag->id]);
+            MemoTag::factory()->create([
+                'user_id' => $user->id,
+                'memo_id' => $memo->id,
+                'tag_id' => $tag->id,
+            ]);
         }
 
         $updatedContent = 'Updated memo content';

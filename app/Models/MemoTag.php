@@ -8,6 +8,4 @@ use Illuminate\Database\Eloquent\Model;
 class MemoTag extends Model
 {
     use HasFactory;
-
-    public $timestamps = false;
 }

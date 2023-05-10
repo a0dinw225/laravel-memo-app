@@ -58,19 +58,19 @@ class TagService implements TagServiceInterface
      * @param array|null $posts
      * @param int $memoId
      * @param bool $tagExists
-     * @param int $authId
+     * @param int $userId
      * @return void
      */
-    public function attachTagsToMemo(?array $posts, int $memoId, bool $tagExists, int $authId): void
+    public function attachTagsToMemo(?array $posts, int $memoId, bool $tagExists, int $userId): void
     {
         if (!empty($posts['new_tag']) && !$tagExists) {
-            $tagId = $this->tagRepository->insertTagGetId($posts['new_tag'], $authId);
-            $this->memoTagRepository->insertMemoTag($memoId, $tagId);
+            $tagId = $this->tagRepository->insertTagGetId($posts['new_tag'], $userId);
+            $this->memoTagRepository->insertMemoTag($userId, $memoId, $tagId);
         }
 
         if (!empty($posts['tags'][0])) {
             foreach ($posts['tags'] as $tag) {
-                $this->memoTagRepository->insertMemoTag($memoId, $tag);
+                $this->memoTagRepository->insertMemoTag($userId, $memoId, $tag);
             }
         }
     }

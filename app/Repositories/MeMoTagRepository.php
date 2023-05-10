@@ -22,13 +22,15 @@ class MemoTagRepository
     /**
      * insert memo tag
      *
+     * @param int $userId
      * @param int $memoId
      * @param int $tagId
      * @return void
      */
-    public function insertMemoTag(int $memoId, int $tagId): void
+    public function insertMemoTag(int $userId, int $memoId, int $tagId): void
     {
         $this->memoTag::insert([
+            'user_id' => $userId,
             'memo_id' => $memoId,
             'tag_id' => $tagId,
         ]);
