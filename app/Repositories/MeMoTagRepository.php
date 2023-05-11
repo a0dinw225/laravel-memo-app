@@ -20,6 +20,21 @@ class MemoTagRepository
     }
 
     /**
+     * get user memo with tag
+     *
+     * @param int $userId
+     * @param int $memoId
+     * @return array
+     */
+    public function getUserMemoWithTag(int $userId, int $memoId): array
+    {
+        return $this->memoTag::where([
+            'user_id' => $userId,
+            'memo_id' => $memoId,
+        ])->get()->toArray();
+    }
+
+    /**
      * insert memo tag
      *
      * @param int $userId
@@ -37,13 +52,18 @@ class MemoTagRepository
     }
 
     /**
-     * delete memo tag
+     * delete memo tag batch
      *
-     * @param int $memoId
+     * @param array $userIds
+     * @param array $memoIds
+     * @param array $tagIds
      * @return void
      */
-    public function deleteMemoTag(int $memoId): void
+    public function deleteMemoTagBatch(array $userIds, array $memoIds, array $tagIds): void
     {
-        $this->memoTag::where('memo_id', $memoId)->delete();
+        $this->memoTag::whereIn('user_id', $userIds)
+            ->whereIn('memo_id', $memoIds)
+            ->whereIn('tag_id', $tagIds)
+            ->update(['deleted_at' => now()]);
     }
 }

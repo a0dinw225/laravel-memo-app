@@ -134,9 +134,20 @@ class HomeController extends Controller
      */
     public function delete(Request $request): RedirectResponse
     {
-        $posts = $request->all();
-        $this->memoService->deleteMemo($posts['memo_id']);
+        try {
+            DB::transaction(function () use($request) {
+                $posts = $request->all();
+                $currentUserIdId = \Auth::id();
+                $memoId = $posts['memo_id'];
 
-        return redirect( route('home') );
+                $memoTags = $this->memoTagService->getUserMemoWithTag($currentUserIdId, $memoId);
+                $this->memoTagService->deleteMemoTag($memoTags);
+                $this->memoService->deleteMemo($posts['memo_id']);
+            });
+
+            return redirect( route('home') );
+        } catch (Exception $e) {
+            return back()->withInput()->withErrors(['message' => 'データの削除中にエラーが発生しました。']);
+        }
     }
 }
