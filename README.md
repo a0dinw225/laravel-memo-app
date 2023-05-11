@@ -32,7 +32,7 @@ Webサービス機能一覧
 
 ## ER図
 
-![コメント 2022-01-30 135731](https://user-images.githubusercontent.com/93024617/151687277-3c48333a-a260-4e28-b752-72f0625468a3.png)
+![laravel-memo-app](https://github.com/a0dinw225/laravel-memo-app/assets/93024617/168b2366-b2fc-41e3-a4f2-d9fb2162d4e5)
 
 ## Requirement(要件)
 
