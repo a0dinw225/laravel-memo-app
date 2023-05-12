@@ -82,4 +82,26 @@ class MemoTagRepositoryTest extends TestCase
             'tag_id' => $tag->id,
         ]);
     }
+
+    /** @test */
+    public function it_can_delete_memo_tag_batch(): void
+    {
+        $user = User::factory()->create();
+        $memo = Memo::factory()->create(['user_id' => $user->id]);
+        $tag = Tag::factory()->create(['user_id' => $user->id]);
+        MemoTag::factory()->create([
+            'user_id' => $user->id,
+            'memo_id' => $memo->id,
+            'tag_id' => $tag->id,
+        ]);
+
+        $this->memoTagRepository->deleteMemoTagBatch([$user->id], [$memo->id], [$tag->id]);
+
+        $this->assertDatabaseHas('memo_tags', [
+            'user_id' => $user->id,
+            'memo_id' => $memo->id,
+            'tag_id' => $tag->id,
+            'deleted_at' => now(),
+        ]);
+    }
 }
