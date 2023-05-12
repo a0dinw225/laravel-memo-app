@@ -78,4 +78,11 @@ class MemoTagServiceTest extends TestCase
             ]);
         }
     }
+
+    /** @test */
+    public function it_can_delete_memo_tag_when_memo_with_tag_is_null(): void
+    {
+        $this->memoTagService->deleteMemoTag(null);
+        $this->assertTrue(true);
+    }
 }
