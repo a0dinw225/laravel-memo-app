@@ -55,19 +55,27 @@ class MemoTagServiceTest extends TestCase
     {
         $user = User::factory()->create();
         $memo = Memo::factory()->create(['user_id' => $user->id]);
-        $tag = Tag::factory()->create(['user_id' => $user->id]);
-        MemoTag::factory()->create([
-            'user_id' => $user->id,
-            'memo_id' => $memo->id,
-            'tag_id' => $tag->id,
-        ]);
+        $tags = Tag::factory(3)->create(['user_id' => $user->id]);
+        foreach ($tags as $tag) {
+            MemoTag::factory()->create([
+                'user_id' => $user->id,
+                'memo_id' => $memo->id,
+                'tag_id' => $tag->id,
+            ]);
+        }
 
-        $this->memoTagService->deleteMemoTag($memo->id);
+        $memoTags = $this->memoTagService->getUserMemoWithTag($user->id, $memo->id);
+        $this->assertCount(3, $memoTags);
 
-        $this->assertDatabaseMissing('memo_tags', [
-            'memo_id' => $memo->id,
-            'tag_id' => $tag->id,
-        ]);
+        $this->memoTagService->deleteMemoTag($memoTags);
+
+        foreach ($memoTags as $memoTag) {
+            $this->assertDatabaseHas('memo_tags', [
+                'user_id' => $memoTag['user_id'],
+                'memo_id' => $memoTag['memo_id'],
+                'tag_id' => $memoTag['tag_id'],
+                'deleted_at' => now(),
+            ]);
+        }
     }
-
 }
