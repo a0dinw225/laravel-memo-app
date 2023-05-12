@@ -5,6 +5,15 @@ namespace App\Repositories;
 Interface MemoTagRepositoryInterface
 {
     /**
+     * Get user memos
+     *
+     * @param int $userId
+     * @param int $memoId
+     * @return array
+     */
+    public function getUserMemoWithTag(int $userId, int $memoId): array;
+
+    /**
      * insert memo tag
      *
      * @param int $userId
@@ -15,10 +24,12 @@ Interface MemoTagRepositoryInterface
     public function insertMemoTag(int $userId, int $memoId, int $tagId): void;
 
     /**
-     * delete memo tag
+     * delete memo tag batch
      *
-     * @param int $memoId
+     * @param array $userIds
+     * @param array $memoIds
+     * @param array $tagIds
      * @return void
      */
-    public function deleteMemoTag(int $memoId): void;
+    public function deleteMemoTagBatch(array $userIds, array $memoIds, array $tagIds): void;
 }

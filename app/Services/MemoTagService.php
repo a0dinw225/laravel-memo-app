@@ -20,13 +20,43 @@ class MemoTagService implements MemoTagServiceInterface
     }
 
     /**
+     * Get user memo with tag
+     *
+     * @param int $userId
+     * @param int $memoId
+     * @return array
+     */
+    public function getUserMemoWithTag(int $userId, int $memoId): array
+    {
+        return $this->memoTagRepository->getUserMemoWithTag($userId, $memoId);
+    }
+
+    /**
      * Delete memo tag
      *
-     * @param int $memoId
+     * @param array|null $memoWithTags
      * @return void
      */
-    public function deleteMemoTag(int $memoId): void
+    public function deleteMemoTag(?array $memoWithTags): void
     {
-        $this->memoTagRepository->deleteMemoTag($memoId);
+        if (is_null($memoWithTags)) {
+            return;
+        }
+
+        $batchSize = 100;
+
+        foreach (array_chunk($memoWithTags, $batchSize) as $memoWithTagBatch) {
+            $userIds = [];
+            $memoIds = [];
+            $tagIds = [];
+
+            foreach ($memoWithTagBatch as $memoWithTag) {
+                $userIds[] = $memoWithTag['user_id'];
+                $memoIds[] = $memoWithTag['memo_id'];
+                $tagIds[] = $memoWithTag['tag_id'];
+            }
+
+            $this->memoTagRepository->deleteMemoTagBatch($userIds, $memoIds, $tagIds);
+        }
     }
 }
