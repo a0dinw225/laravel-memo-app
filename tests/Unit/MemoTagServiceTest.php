@@ -53,6 +53,29 @@ class MemoTagServiceTest extends TestCase
     }
 
     /** @test */
+    public function it_can_get_tag_ids_for_user_memo(): void
+    {
+        $user = User::factory()->create();
+        $memo = Memo::factory()->create(['user_id' => $user->id]);
+        $tags = Tag::factory(2)->create(['user_id' => $user->id]);
+
+        foreach ($tags as $tag) {
+            MemoTag::factory()->create([
+                'user_id' => $user->id,
+                'memo_id' => $memo->id,
+                'tag_id' => $tag->id,
+            ]);
+        }
+
+        $tagIds = $this->memoTagService->getTagIdsForUserMemo($user->id, $memo->id);
+
+        $this->assertCount(2, $tagIds);
+        foreach ($tags as $tag) {
+            $this->assertContains($tag->id, $tagIds);
+        }
+    }
+
+    /** @test */
     public function it_can_new_tag_attach_tags_to_memo(): void
     {
         $user = User::factory()->create();

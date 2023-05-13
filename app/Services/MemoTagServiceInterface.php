@@ -13,6 +13,15 @@ interface MemoTagServiceInterface
     public function getUserMemoWithTag(int $userId, int $memoId): array;
 
     /**
+     * Get tag ids for user memo
+     *
+     * @param int $userId
+     * @param int $memoId
+     * @return array
+     */
+    public function getTagIdsForUserMemo(int $userId, int $memoId): array;
+
+    /**
      * Attach tags to memo
      *
      * @param array|null $posts

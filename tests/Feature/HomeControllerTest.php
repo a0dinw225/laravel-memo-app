@@ -66,7 +66,7 @@ class HomeControllerTest extends TestCase
         $this->tagService->expects($this->once())
             ->method('getUserTags')
             ->with($user->id)
-            ->willReturn(['user_tags' => $tags->toArray()]);
+            ->willReturn($tags->toArray());
 
         $response = $this->get(route('home'));
 
@@ -84,7 +84,7 @@ class HomeControllerTest extends TestCase
         $this->tagService->expects($this->once())
             ->method('getUserTags')
             ->with($user->id)
-            ->willReturn(['user_tags' => []]);
+            ->willReturn([]);
 
         $response = $this->get(route('home'));
 
@@ -117,7 +117,7 @@ class HomeControllerTest extends TestCase
             ->with($user->id, $newTag)
             ->willReturn(false);
 
-        $this->tagService->expects($this->once())
+        $this->memoTagService->expects($this->once())
             ->method('attachTagsToMemo')
             ->with([
                 'content' => $memoContent,
@@ -159,7 +159,7 @@ class HomeControllerTest extends TestCase
             ->with($user->id, $newTag)
             ->willReturn(false);
 
-        $this->tagService->expects($this->once())
+        $this->memoTagService->expects($this->once())
             ->method('attachTagsToMemo')
             ->with([
                 'content' => $memoContent,
@@ -199,7 +199,7 @@ class HomeControllerTest extends TestCase
         $this->tagService->expects($this->once())
             ->method('checkIfTagExists');
 
-        $this->tagService->expects($this->once())
+        $this->memoTagService->expects($this->once())
             ->method('attachTagsToMemo')
             ->with([
                 'content' => $memoContent,
@@ -239,7 +239,7 @@ class HomeControllerTest extends TestCase
         $this->tagService->expects($this->once())
             ->method('checkIfTagExists');
 
-        $this->tagService->expects($this->once())
+        $this->memoTagService->expects($this->once())
             ->method('attachTagsToMemo')
             ->with([
                 'content' => $memoContent,
@@ -264,63 +264,32 @@ class HomeControllerTest extends TestCase
         $this->actingAs($user);
 
         $memo = Memo::factory()->create(['user_id' => $user->id]);
+        $memoTagIds = MemoTag::factory()->count(3)->create([
+            'user_id' => $user->id,
+            'memo_id' => $memo->id,
+        ])->pluck('tag_id')->toArray();
         $tags = Tag::factory()->count(3)->create(['user_id' => $user->id]);
 
-        foreach ($tags as $tag) {
-            MemoTag::factory()->create([
-                'user_id' => $user->id,
-                'memo_id' => $memo->id,
-                'tag_id' => $tag->id,
-            ]);
-        }
+        $this->memoService->expects($this->once())
+            ->method('getUserMemoById')
+            ->with($user->id, $memo->id)
+            ->willReturn($memo->toArray());
+
+        $this->memoTagService->expects($this->once())
+            ->method('getTagIdsForUserMemo')
+            ->with($user->id, $memo->id)
+            ->willReturn($memoTagIds);
 
         $this->tagService->expects($this->once())
             ->method('getUserTags')
             ->with($user->id)
             ->willReturn($tags->toArray());
 
-        $this->memoService->expects($this->once())
-            ->method('getMemoTags')
-            ->with($memo->id, $user->id)
-            ->willReturn([
-                'memo_with_tags' => [$memo->toArray()],
-                'memo_tag_ids' => $tags->pluck('id')->all(),
-            ]);
-
         $response = $this->get(route('edit', ['id' => $memo->id]));
 
         $response->assertStatus(200)
             ->assertViewIs('edit')
-            ->assertViewHasAll(['editMemo', 'memoTagIds', 'tags']);
-    }
-
-    /** @test */
-    public function it_can_edit_a_memo_with_no_tags()
-    {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        $memo = Memo::factory()->create(['user_id' => $user->id]);
-        $tags = Tag::factory()->count(3)->create(['user_id' => $user->id]);
-
-        $this->tagService->expects($this->once())
-            ->method('getUserTags')
-            ->with($user->id)
-            ->willReturn($tags->toArray());
-
-        $this->memoService->expects($this->once())
-            ->method('getMemoTags')
-            ->with($memo->id, $user->id)
-            ->willReturn([
-                'memo_with_tags' => [$memo->toArray()],
-                'memo_tag_ids' => [],
-            ]);
-
-        $response = $this->get(route('edit', ['id' => $memo->id]));
-
-        $response->assertStatus(200)
-            ->assertViewIs('edit')
-            ->assertViewHasAll(['editMemo', 'memoTagIds', 'tags']);
+            ->assertViewHasAll(['memo', 'memoTagIds', 'tags']);
     }
 
     /** @test */
@@ -331,42 +300,35 @@ class HomeControllerTest extends TestCase
 
         $memo = Memo::factory()->create(['user_id' => $user->id]);
         $memoId = $memo->id;
-
-        $tags = Tag::factory()->count(3)->create(['user_id' => $user->id]);
-        $checkedTags = $tags->pluck('id')->toArray();
-
-        foreach ($tags as $tag) {
-            MemoTag::factory()->create([
-                'user_id' => $user->id,
-                'memo_id' => $memo->id,
-                'tag_id' => $tag->id,
-            ]);
-        }
-
-        $updatedContent = 'Updated memo content';
-        $newTagName = 'New Tag Name';
+        $memoContent = $this->faker->text;
+        $newTag = $this->faker->word;
+        $tagIds = [1, 2, 3];
 
         $postData = [
-            'content' => $updatedContent,
-            'new_tag' => $newTagName,
-            'tags' => $checkedTags,
             'memo_id' => $memoId,
+            'content' => $memoContent,
+            'new_tag' => $newTag,
+            'tags' => $tagIds,
         ];
 
         $this->memoService->expects($this->once())
             ->method('updateMemo')
-            ->with($memoId, $updatedContent);
+            ->with($memoId, $memoContent);
 
         $this->memoTagService->expects($this->once())
-            ->method('deleteMemoTag')
-            ->with($memoId);
+            ->method('getUserMemoWithTag')
+            ->with($user->id, $memoId)
+            ->willReturn([]);
+
+        $this->memoTagService->expects($this->once())
+            ->method('deleteMemoTag');
 
         $this->tagService->expects($this->once())
             ->method('checkIfTagExists')
-            ->with($user->id, $newTagName)
+            ->with($user->id, $newTag)
             ->willReturn(true);
 
-        $this->tagService->expects($this->once())
+        $this->memoTagService->expects($this->once())
             ->method('attachTagsToMemo')
             ->with($postData, $memoId, true, $user->id);
 
@@ -384,41 +346,35 @@ class HomeControllerTest extends TestCase
 
         $memo = Memo::factory()->create(['user_id' => $user->id]);
         $memoId = $memo->id;
-
-        $tags = Tag::factory()->count(3)->create(['user_id' => $user->id]);
-
-        foreach ($tags as $tag) {
-            MemoTag::factory()->create([
-                'user_id' => $user->id,
-                'memo_id' => $memo->id,
-                'tag_id' => $tag->id,
-            ]);
-        }
-
-        $updatedContent = 'Updated memo content';
-        $newTagName = 'New Tag Name';
+        $memoContent = $this->faker->text;
+        $newTag = $this->faker->word;
+        $tagIds = [];
 
         $postData = [
-            'content' => $updatedContent,
-            'new_tag' => $newTagName,
-            'tags' => [],
             'memo_id' => $memoId,
+            'content' => $memoContent,
+            'new_tag' => $newTag,
+            'tags' => $tagIds,
         ];
 
         $this->memoService->expects($this->once())
             ->method('updateMemo')
-            ->with($memoId, $updatedContent);
+            ->with($memoId, $memoContent);
 
         $this->memoTagService->expects($this->once())
-            ->method('deleteMemoTag')
-            ->with($memoId);
+            ->method('getUserMemoWithTag')
+            ->with($user->id, $memoId)
+            ->willReturn([]);
+
+        $this->memoTagService->expects($this->once())
+            ->method('deleteMemoTag');
 
         $this->tagService->expects($this->once())
             ->method('checkIfTagExists')
-            ->with($user->id, $newTagName)
+            ->with($user->id, $newTag)
             ->willReturn(true);
 
-        $this->tagService->expects($this->once())
+        $this->memoTagService->expects($this->once())
             ->method('attachTagsToMemo')
             ->with($postData, $memoId, true, $user->id);
 
@@ -440,6 +396,14 @@ class HomeControllerTest extends TestCase
         $postData = [
             'memo_id' => $memoId,
         ];
+
+        $this->memoTagService->expects($this->once())
+            ->method('getUserMemoWithTag')
+            ->with($user->id, $memoId)
+            ->willReturn([]);
+
+        $this->memoTagService->expects($this->once())
+            ->method('deleteMemoTag');
 
         $this->memoService->expects($this->once())
             ->method('deleteMemo')

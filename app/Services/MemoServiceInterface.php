@@ -5,6 +5,15 @@ namespace App\Services;
 interface MemoServiceInterface
 {
     /**
+     * Get user memo by id
+     *
+     * @param int $userId
+     * @param int $memoId
+     * @return array
+     */
+    public function getUserMemoById(int $userId, int $memoId): array;
+
+    /**
      * Get user memos
      *
      * @param int $memoId

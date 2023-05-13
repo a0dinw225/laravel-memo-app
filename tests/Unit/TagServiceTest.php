@@ -38,7 +38,7 @@ class TagServiceTest extends TestCase
         $result = $this->tagService->getUserTags($user->id);
 
         $this->assertIsArray($result);
-        $this->assertCount(3, $result['user_tags']);
+        $this->assertCount(3, $result);
     }
 
     /** @test */

@@ -37,6 +37,23 @@ class MemoTagService implements MemoTagServiceInterface
     }
 
     /**
+     * Get tag ids for user memo
+     *
+     * @param int $userId
+     * @param int $memoId
+     * @return array
+     */
+    public function getTagIdsForUserMemo(int $userId, int $memoId): array
+    {
+        $memoWithTags = $this->memoTagRepository->getUserMemoWithTag($userId, $memoId);
+        $tagIds = [];
+        foreach ($memoWithTags as $memoWithTag) {
+            $tagIds[] = $memoWithTag['tag_id'];
+        }
+        return $tagIds;
+    }
+
+    /**
      * Attach tags to memo
      *
      * @param array|null $posts

@@ -31,6 +31,18 @@ class MemoServiceTest extends TestCase
     }
 
     /** @test */
+    public function it_can_get_user_memo_by_id(): void
+    {
+        $user = User::factory()->create();
+        $memo = Memo::factory()->create(['user_id' => $user->id]);
+
+        $result = $this->memoService->getUserMemoById($user->id, $memo->id);
+
+        $this->assertIsArray($result);
+        $this->assertSame($memo->id, $result['id']);
+    }
+
+    /** @test */
     public function it_can_get_user_memo(): void
     {
         $user = User::factory()->create();

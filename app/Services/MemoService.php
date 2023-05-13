@@ -21,6 +21,19 @@ class MemoService implements MemoServiceInterface
     }
 
     /**
+     * Get user memo by id
+     *
+     * @param int $userId
+     * @param int $memoId
+     * @return array
+     */
+    public function getUserMemoById(int $userId, int $memoId): array
+    {
+        return $this->memoRepository->getUserMemoById($userId, $memoId);
+    }
+
+
+    /**
      * Get user memos
      *
      * @param int $memoId
@@ -32,7 +45,7 @@ class MemoService implements MemoServiceInterface
         $memo = $this->memoRepository->getUserMemoWithTagsById($memoId, $userId);
 
         return [
-        'memo' => $memo,
+            'memo' => $memo,
         ];
     }
 

@@ -26,11 +26,7 @@ class TagService implements TagServiceInterface
      */
     public function getUserTags(int $userId): array
     {
-        $userTags = $this->tagRepository->getUserTags($userId);
-
-        return [
-            'user_tags' => $userTags,
-        ];
+        return $this->tagRepository->getUserTags($userId);
     }
 
     /**

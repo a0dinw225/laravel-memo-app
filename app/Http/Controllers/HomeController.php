@@ -70,7 +70,7 @@ class HomeController extends Controller
                 $memoId = $this->memoService->createNewMemoGetId($posts, $currentUserIdId);
                 $tagExists = $this->tagService->checkIfTagExists($currentUserIdId, $posts['new_tag']);
 
-                $this->tagService->attachTagsToMemo($posts, $memoId, $tagExists, $currentUserIdId);
+                $this->memoTagService->attachTagsToMemo($posts, $memoId, $tagExists, $currentUserIdId);
             });
 
             return redirect(route('home'));
@@ -88,13 +88,13 @@ class HomeController extends Controller
      */
     public function edit(int $id): View
     {
-        $currentUserIdId = \Auth::id();
-        $tags = $this->tagService->getUserTags($currentUserIdId);
-        $getMemoTags = $this->memoService->getMemoTags($id, $currentUserIdId);
-        $editMemo = $getMemoTags['memo_with_tags'];
-        $memoTagIds = $getMemoTags['memo_tag_ids'];
+        $currentUserId = \Auth::id();
 
-        return view('edit', compact('editMemo', 'memoTagIds', 'tags'));
+        $memo = $this->memoService->getUserMemoById($currentUserId, $id);
+        $memoTagIds = $this->memoTagService->getTagIdsForUserMemo($currentUserId, $id);
+        $tags = $this->tagService->getUserTags($currentUserId);
+
+        return view('edit', compact('memo', 'memoTagIds', 'tags'));
     }
 
     /**
@@ -113,11 +113,12 @@ class HomeController extends Controller
                 $memoId = $posts['memo_id'];
 
                 $this->memoService->updateMemo($memoId, $posts['content']);
-                $this->memoTagService->deleteMemoTag($memoId);
+                $memoTags = $this->memoTagService->getUserMemoWithTag($currentUserIdId, $memoId);
+                $this->memoTagService->deleteMemoTag($memoTags);
 
                 $tagExists = $this->tagService->checkIfTagExists($currentUserIdId, $posts['new_tag']);
 
-                $this->tagService->attachTagsToMemo($posts, $memoId, $tagExists, $currentUserIdId);
+                $this->memoTagService->attachTagsToMemo($posts, $memoId, $tagExists, $currentUserIdId);
             });
 
             return redirect( route('home') );

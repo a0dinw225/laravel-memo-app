@@ -20,6 +20,22 @@ class MemoRepository
     }
 
     /**
+     * get user memo
+     *
+     * @param int $userId
+     * @param int $memoId
+     * @return array
+     */
+    public function getUserMemoById(int $userId, int $memoId): array
+    {
+        return $this->memo::where('user_id', $userId)
+                        ->where('id', $memoId)
+                        ->whereNull('deleted_at')
+                        ->first()
+                        ->toArray();
+    }
+
+    /**
      * get tags with memo id
      *
      * @param int $memoId
