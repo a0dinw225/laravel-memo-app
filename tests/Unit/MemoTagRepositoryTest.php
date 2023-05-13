@@ -49,6 +49,23 @@ class MemoTagRepositoryTest extends TestCase
     }
 
     /** @test */
+    public function it_can_not_get_user_memo_with_tag(): void
+    {
+        $user = User::factory()->create();
+        $memo = Memo::factory()->create(['user_id' => $user->id]);
+        $tag = Tag::factory()->create(['user_id' => $user->id]);
+        MemoTag::factory()->create([
+            'user_id' => $user->id,
+            'memo_id' => $memo->id,
+            'tag_id' => $tag->id,
+            'deleted_at' => now(),
+        ]);
+
+        $memoTags = $this->memoTagRepository->getUserMemoWithTag($user->id, $memo->id);
+        $this->assertEmpty($memoTags);
+    }
+
+    /** @test */
     public function it_can_insert_memo_tag(): void
     {
         $user = User::factory()->create();

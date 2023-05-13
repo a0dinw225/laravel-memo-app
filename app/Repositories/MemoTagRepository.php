@@ -28,10 +28,11 @@ class MemoTagRepository
      */
     public function getUserMemoWithTag(int $userId, int $memoId): array
     {
-        return $this->memoTag::where([
-            'user_id' => $userId,
-            'memo_id' => $memoId,
-        ])->get()->toArray();
+        return $this->memoTag::where('user_id', $userId)
+            ->where('memo_id', $memoId)
+            ->whereNull('deleted_at')
+            ->get()
+            ->toArray();
     }
 
     /**

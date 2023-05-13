@@ -5,6 +5,15 @@ namespace App\Repositories;
 interface MemoRepositoryInterface
 {
     /**
+     * get user memo
+     *
+     * @param int $userId
+     * @param int $memoId
+     * @return array
+     */
+    public function getUserMemoById(int $userId, int $memoId): array;
+
+    /**
      * get tags with memo id
      *
      * @param int $memoId

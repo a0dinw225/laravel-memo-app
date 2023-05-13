@@ -3,20 +3,25 @@
 namespace App\Services;
 
 use App\Repositories\MemoTagRepository;
+use App\Repositories\TagRepository;
 
 class MemoTagService implements MemoTagServiceInterface
 {
     /** @var MemoTagRepository */
     protected $memoTagRepository;
 
+    /** @var TagRepository */
+    protected $tagRepository;
+
     /**
      * MemoTagService constructor.
      *
      * @param MemoTagRepository $memoTagRepository
      */
-    public function __construct(MemoTagRepository $memoTagRepository)
+    public function __construct(MemoTagRepository $memoTagRepository, TagRepository $tagRepository)
     {
         $this->memoTagRepository = $memoTagRepository;
+        $this->tagRepository = $tagRepository;
     }
 
     /**
@@ -29,6 +34,46 @@ class MemoTagService implements MemoTagServiceInterface
     public function getUserMemoWithTag(int $userId, int $memoId): array
     {
         return $this->memoTagRepository->getUserMemoWithTag($userId, $memoId);
+    }
+
+    /**
+     * Get tag ids for user memo
+     *
+     * @param int $userId
+     * @param int $memoId
+     * @return array
+     */
+    public function getTagIdsForUserMemo(int $userId, int $memoId): array
+    {
+        $memoWithTags = $this->memoTagRepository->getUserMemoWithTag($userId, $memoId);
+        $tagIds = [];
+        foreach ($memoWithTags as $memoWithTag) {
+            $tagIds[] = $memoWithTag['tag_id'];
+        }
+        return $tagIds;
+    }
+
+    /**
+     * Attach tags to memo
+     *
+     * @param array|null $posts
+     * @param int $memoId
+     * @param bool $tagExists
+     * @param int $userId
+     * @return void
+     */
+    public function attachTagsToMemo(?array $posts, int $memoId, bool $tagExists, int $userId): void
+    {
+        if (!empty($posts['new_tag']) && !$tagExists) {
+            $tagId = $this->tagRepository->insertTagGetId($posts['new_tag'], $userId);
+            $this->memoTagRepository->insertMemoTag($userId, $memoId, $tagId);
+        }
+
+        if (!empty($posts['tags'][0])) {
+            foreach ($posts['tags'] as $tag) {
+                $this->memoTagRepository->insertMemoTag($userId, $memoId, $tag);
+            }
+        }
     }
 
     /**

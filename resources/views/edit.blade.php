@@ -10,7 +10,7 @@
             メモ編集
             <form id="delete-form" action="{{ route('delete') }}" method="POST">
                 @csrf
-                <input type="hidden" name="memo_id" value="{{ $editMemo[0]['id'] }}" />
+                <input type="hidden" name="memo_id" value="{{ $memo['id'] }}" />
                 <i class="fas fa-trash me-3" onclick="deleteHandle(event);"></i>
             </form>
         </div>
@@ -21,9 +21,9 @@
                     {{ $message }}
                 </div>
             @enderror
-            <input type="hidden" name="memo_id" value="{{ $editMemo[0]['id'] }}" />
+            <input type="hidden" name="memo_id" value="{{ $memo['id'] }}" />
             <div class="form-group mb-3">
-                <textarea class="form-control" name="content" rows="3" placeholder="ここにメモを入力">{{ $editMemo[0]['content'] }}</textarea>
+                <textarea class="form-control" name="content" rows="3" placeholder="ここにメモを入力">{{ $memo['content'] }}</textarea>
             </div>
             @error('content')
                 <div class="alert alert-danger mt-3">メモ内容を入力してください!</div>
