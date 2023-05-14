@@ -4,30 +4,39 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Memo extends Model
 {
     use HasFactory;
 
-    public function getMyMemo() {
-        $query_tag = \Request::query('tag');
+    public function getMyMemo(): Collection
+    {
+        $queryTag = request()->query('tag');
 
-        // ==== ベースのメソッド ====
-        $query = Memo::query()->select('memos.*')
-            ->where('user_id', '=', \Auth::id())
-            ->whereNull('deleted_at')
-            ->orderBy('updated_at', 'DESC');
-        // ==== ベースのメソッドここまで ====
+        $query = $this->buildBaseQuery();
 
-        // もしクエリパラメータtagがあれば
-        if(!empty($query_tag)) {
-            // タグで絞り込み
-            $query->leftJoin('memo_tags', 'memo_tags.memo_id', '=', 'memos.id')
-                    ->where('memo_tags.tag_id', '=', $query_tag);
+        if ($queryTag) {
+            $query = $this->applyTagFilter($query, $queryTag);
         }
 
-        $memos = $query->get();
-        return $memos;
+        $query->orderByDesc('memos.updated_at');
 
+        return $query->get();
+    }
+
+    private function buildBaseQuery()
+    {
+        return $this->newQuery()
+            ->select('memos.*')
+            ->where('memos.user_id', '=', auth()->id())
+            ->whereNull('memos.deleted_at');
+    }
+
+    private function applyTagFilter($query, $queryTag)
+    {
+        return $query->leftJoin('memo_tags', 'memo_tags.memo_id', '=', 'memos.id')
+            ->where('memo_tags.tag_id', '=', $queryTag)
+            ->whereNull('memo_tags.deleted_at');
     }
 }
