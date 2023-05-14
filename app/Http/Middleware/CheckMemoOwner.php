@@ -18,7 +18,6 @@ class CheckMemoOwner
      */
     public function handle(Request $request, Closure $next): Response
     {
-        \Log::debug('CheckMemoOwner middleware');
         $currentUser = auth()->id();
         $memo = Memo::findOrFail($request->id);
 

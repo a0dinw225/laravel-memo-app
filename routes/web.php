@@ -19,11 +19,11 @@ Auth::routes();
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('index');
     Route::get('home', [HomeController::class, 'index'])->name('home');
+    Route::post('store', [HomeController::class, 'store'])->name('store');
+    Route::post('update', [HomeController::class, 'update'])->name('update');
+    Route::post('delete', [HomeController::class, 'delete'])->name('delete');
 });
 
 Route::middleware(['auth', 'checkMemoOwner'])->group(function () {
-    Route::post('store', [HomeController::class, 'store'])->name('store');
     Route::get('edit/{id}', [HomeController::class, 'edit'])->name('edit');
-    Route::post('update', [HomeController::class, 'update'])->name('update');
-    Route::post('delete', [HomeController::class, 'delete'])->name('delete');
 });
