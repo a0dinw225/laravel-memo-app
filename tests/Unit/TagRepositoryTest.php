@@ -27,6 +27,17 @@ class TagRepositoryTest extends TestCase
     }
 
     /** @test */
+    public function it_can_get_tag_by_id(): void
+    {
+        $tag = Tag::factory()->create();
+
+        $result = $this->tagRepository->getTagById($tag->id);
+
+        $this->assertIsArray($result);
+        $this->assertSame($tag->id, $result['id']);
+    }
+
+    /** @test */
     public function it_can_get_user_tags(): void
     {
         $user = User::factory()->create();
@@ -108,5 +119,17 @@ class TagRepositoryTest extends TestCase
 
         $result = $this->tagRepository->checkTagExists($user->id, null);
         $this->assertFalse($result);
+    }
+
+    /** @test */
+    public function it_can_delete_tag(): void
+    {
+        $tag = Tag::factory()->create();
+
+        $this->tagRepository->deleteTag($tag->id);
+
+        $this->assertSoftDeleted('tags', [
+            'id' => $tag->id,
+        ]);
     }
 }

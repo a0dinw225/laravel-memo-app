@@ -30,6 +30,17 @@ class TagServiceTest extends TestCase
     }
 
     /** @test */
+    public function it_can_get_tag_by_id(): void
+    {
+        $tag = Tag::factory()->create();
+
+        $result = $this->tagService->getTagById($tag->id);
+
+        $this->assertIsArray($result);
+        $this->assertSame($tag->id, $result['id']);
+    }
+
+    /** @test */
     public function it_can_get_user_tags(): void
     {
         $user = User::factory()->create();
@@ -61,5 +72,17 @@ class TagServiceTest extends TestCase
         $result = $this->tagService->checkIfTagExists($user->id, null);
 
         $this->assertFalse($result);
+    }
+
+    /** @test */
+    public function it_can_delete_tag(): void
+    {
+        $tag = Tag::factory()->create();
+
+        $this->tagService->deleteTag($tag->id);
+
+        $this->assertSoftDeleted('tags', [
+            'id' => $tag->id,
+        ]);
     }
 }

@@ -19,6 +19,17 @@ class TagService implements TagServiceInterface
     }
 
     /**
+     * get tag by id
+     *
+     * @param int $tagId
+     * @return array
+     */
+    public function getTagById(int $tagId): array
+    {
+        return $this->tagRepository->getTagById($tagId);
+    }
+
+    /**
      * Get user tags
      *
      * @param int $userId
@@ -40,5 +51,16 @@ class TagService implements TagServiceInterface
     {
         $tagExists = $this->tagRepository->checkTagExists($userId, $tagName);
         return $tagExists;
+    }
+
+    /**
+     * Delete tag
+     *
+     * @param int $tagId
+     * @return void
+     */
+    public function deleteTag(int $tagId): void
+    {
+        $this->tagRepository->deleteTag($tagId);
     }
 }

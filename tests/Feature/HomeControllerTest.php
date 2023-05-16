@@ -68,6 +68,8 @@ class HomeControllerTest extends TestCase
             ->with($user->id)
             ->willReturn($tags->toArray());
 
+        Memo::factory()->count(3)->create(['user_id' => $user->id]);
+
         $response = $this->get(route('home'));
 
         $response->assertStatus(200)
@@ -85,6 +87,8 @@ class HomeControllerTest extends TestCase
             ->method('getUserTags')
             ->with($user->id)
             ->willReturn([]);
+
+        Memo::factory()->count(3)->create(['user_id' => $user->id]);
 
         $response = $this->get(route('home'));
 

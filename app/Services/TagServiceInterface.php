@@ -5,6 +5,14 @@ namespace App\Services;
 interface TagServiceInterface
 {
     /**
+     * get tag by id
+     *
+     * @param int $tagId
+     * @return array
+     */
+    public function getTagById(int $tagId): array;
+
+    /**
      * Get user tags
      *
      * @param int $userId
