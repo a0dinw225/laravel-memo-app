@@ -11,18 +11,23 @@ class MemoHelper
      *
      * @param object $memos
      * @param integer $tagId
-     * 
+     * @return string
      */
-    public static function displayMemos($memos, $tagId)
+    public static function displayMemos($memos, $tagId): string
     {
         if (is_null($memos) && is_null($tagId)) {
-            return;
+            return '';
         }
 
         if ($tagId && $memos->isEmpty()) {
             $tagName = self::getTagName($tagId);
-            $res = '関連づけられたメモがありません<br>';
-            $res .= "タグ名 : {$tagName} を<a href='#' onclick='deleteTag({$tagId}); return false;'>削除</a>";
+            $res = '<div class="alert alert-warning" role="alert">';
+            $res .= '関連づけられたメモがありません';
+            $res .= "</div>";
+            $res .= "<div class='text-center'>";
+            $res .= "<p>タグ名 : <strong>{$tagName}</strong></p>";
+            $res .= "<button class='btn btn-danger' onclick='deleteTag({$tagId}); return false;'>タグを削除</button>";
+            $res .= "</div>";
             return $res;
         }
 
