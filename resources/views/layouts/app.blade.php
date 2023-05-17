@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- API Token -->
+    <meta name="api-token" content="{{ auth()->user()->api_token }}">
+
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -11,6 +14,7 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/deleteTag.js') }}"></script>
     @yield('javascript')
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -94,9 +98,7 @@
                     <div class="card">
                         <div class="card-header d-flex justify-content-between">メモ一覧<a href="{{ route('home') }}"><i class="fas fa-plus-circle"></i></a></div>
                         <div class="card-body my-card-body">
-                    @foreach($memos as $memo)
-                            <a href="/edit/{{$memo['id']}}" class="card-text d-block text-decoration-none elipsis mb-2">{{ $memo['content'] }}</a>
-                    @endforeach
+                            {!! App\Helpers\MemoHelper::displayMemos($memos, $tagId ?? null) !!}
                         </div>
                     </div>
                 </div>

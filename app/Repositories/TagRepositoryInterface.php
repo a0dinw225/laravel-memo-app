@@ -5,6 +5,14 @@ namespace App\Repositories;
 interface TagRepositoryInterface
 {
     /**
+     * get tag by id
+     *
+     * @param int $tagId
+     * @return array
+     */
+    public function getTagById(int $tagId): array;
+
+    /**
      * Get user tags
      *
      * @param int $userId
@@ -38,4 +46,12 @@ interface TagRepositoryInterface
      * @return bool
      */
     public function checkTagExists(int $userId, ?string $tagName): bool;
+
+    /**
+     * delete tag
+     *
+     * @param int $tagId
+     * @return void
+     */
+    public function deleteTag(int $tagId): void;
 }

@@ -46,12 +46,13 @@ class HomeController extends Controller
      * Show the application dashboard.
      * @return \Illuminate\Contracts\View\View
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         $currentUserIdId = \Auth::id();
         $tags = $this->tagService->getUserTags($currentUserIdId);
+        $tagId = $request->query('tag');
 
-        return view('create', compact('tags'));
+        return view('create', compact('tags'), compact('tagId'));
     }
 
     /**

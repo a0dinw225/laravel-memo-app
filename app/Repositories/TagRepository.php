@@ -20,6 +20,20 @@ class TagRepository implements TagRepositoryInterface
     }
 
     /**
+     * get tag by id
+     *
+     * @param int $tagId
+     * @return array
+     */
+    public function getTagById(int $tagId): array
+    {
+        return $this->tag::where('id', $tagId)
+                        ->whereNull('deleted_at')
+                        ->first()
+                        ->toArray();
+    }
+
+    /**
      * Get user tags
      *
      * @param int $userId
@@ -76,5 +90,18 @@ class TagRepository implements TagRepositoryInterface
     {
         return Tag::where('user_id', '=', $userId)->where('name', '=', $tagName)
         ->exists();
+    }
+
+    /**
+     * delete tag
+     *
+     * @param int $tagId
+     * @return void
+     */
+    public function deleteTag(int $tagId): void
+    {
+        Tag::where('id', $tagId)->update([
+            'deleted_at' => now(),
+        ]);
     }
 }
