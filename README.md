@@ -160,3 +160,21 @@ APPコンテナに入り、テストを行うと開発環境用DBのデータが
 ```
 ./vendor/bin/phpunit --filter it_can_get_user_memo_with_tags_by_id tests/Unit/MemoRepositoryTest.php
 ```
+
+## デバッグ前準備
+VS Codeの拡張機能「PHP Debug」をインストールする
+
+<img width="719" alt="スクリーンショット 2023-05-28 2 33 42" src="https://github.com/a0dinw225/laravel-memo-app/assets/93024617/4c38212b-8b4d-4426-8584-f93e24449a99">
+
+## デバッグ実行
+1. Webアプリでのデバッグ方法
+- ブレイクポイントを配置(ソースコード行数の左側を押下することで配置できる)
+- APPコンテナに入る
+- VS Codeのサイドバーから「実行とデバッグ」を選択し「Listen for Xdebug」を押下する。
+- Webアプリを操作しHTTPリクエストを送る
+
+2. PHPUnitでのデバッグ方法
+- ブレイクポイントを配置(ソースコード行数の左側を押下することで配置できる)
+- テスト用コンテナに入る
+- VS Codeのサイドバーから「実行とデバッグ」を選択し「Listen for Xdebug(Testing)」を押下する。
+- PHPUnitを実行する
