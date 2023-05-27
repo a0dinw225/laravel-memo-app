@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        XDEBUG_PORT: 9003
     container_name: myapp
     command: bash -c "php artisan serve --host=0.0.0.0"
     ports:
@@ -21,12 +23,15 @@ services:
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - TZ="Asia/Tokyo"
+      - XDEBUG_PORT=9003
     depends_on:
       - db
   app_testing:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        XDEBUG_PORT: 9004
     container_name: myapp_testing
     command: bash -c "php artisan serve --host=0.0.0.0"
     ports:
@@ -44,6 +49,7 @@ services:
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - TZ="Asia/Tokyo"
+      - XDEBUG_PORT=9004
     depends_on:
       - db
   db:
