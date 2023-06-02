@@ -14,7 +14,8 @@ Webサービス機能一覧
 * メモ編集機能
 * メモ削除機能
 * タグ機能
-* タグ追加機能  
+* タグ追加機能
+* タグ削除機能
 
 ## How to Use(利用方法)
 
@@ -178,3 +179,9 @@ VS Codeの拡張機能「PHP Debug」をインストールする
 - テスト用コンテナに入る
 - VS Codeのサイドバーから「実行とデバッグ」を選択し「Listen for Xdebug(Testing)」を押下する。
 - PHPUnitを実行する
+
+## バッチ実行
+#### memo_tagsテーブルの論理削除されたレコードを物理削除するバッチ実行
+```
+php artisan memotags:delete-unused
+```
