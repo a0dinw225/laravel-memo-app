@@ -73,11 +73,12 @@ services:
       dockerfile: Dockerfile
     image: laravel-memo-go-api
     container_name: go-api
-    command: go run cmd/api/main.go
+    command: sh -c "/wait-for-it.sh db:3306 -- air"
     ports:
       - "8080:8080"
     volumes:
       - ../go-memo-api:/go/src/app
+      - ../go-memo-api/air.toml:/go/src/app/air.toml
     environment:
       - DB_HOST=db
       - DB_PORT=3306
