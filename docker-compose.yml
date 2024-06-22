@@ -73,7 +73,7 @@ services:
       dockerfile: Dockerfile
     image: laravel-memo-go-api
     container_name: go-api
-    command: go run main.go
+    command: go run cmd/api/main.go
     ports:
       - "8080:8080"
     volumes:
@@ -84,6 +84,7 @@ services:
       - DB_DATABASE=${DB_DATABASE}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
+      - TZ=Asia/Tokyo
     depends_on:
       - db
 volumes:
