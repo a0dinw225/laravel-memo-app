@@ -66,7 +66,8 @@
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
+                                                     document.getElementById('logout-form').submit();
+                                                     localStorage.removeItem('authToken');">
                                         {{ __('Logout') }}
                                     </a>
 
@@ -90,7 +91,7 @@
                             <a href="/" class="card-text d-block text-decoration-none mb-2">全て表示</a>
                     @foreach($tags as $tag)
                             <a href="/?tag={{$tag['id']}}" class="card-text d-block text-decoration-none elipsis mb-2">{{ $tag['name'] }}</a>
-                    @endforeach 
+                    @endforeach
                         </div>
                     </div>
                 </div>
@@ -108,5 +109,17 @@
             </div>
         </main>
     </div>
+
+    <!-- ログアウト時にトークンを削除するスクリプト -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const logoutLink = document.querySelector('a[href="{{ route('logout') }}"]');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function () {
+                    localStorage.removeItem('authToken');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
