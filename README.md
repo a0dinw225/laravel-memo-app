@@ -97,6 +97,17 @@ mysql -u root -p
 ```
 ※パスワードは`.env`の`DB_PASSWORD`
 
+## GO APIコンテナ関連
+API用コンテナの再起動
+```
+docker-compose restart go-memo-api
+```
+
+API用コンテナに入る
+```
+docker exec -it go-api /bin/sh
+```
+
 ## PHPUnit　テスト準備
 DBコンテナに入り、MySQL接続しテスト用DBを作成
 ```
