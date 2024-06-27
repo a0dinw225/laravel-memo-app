@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}" id="login-form">
+                    <form method="POST" action="{{ route('login') }}">
                         @csrf
 
                         <div class="row mb-3">
@@ -65,50 +65,6 @@
                             </div>
                         </div>
                     </form>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const loginRoute = "{{ route('login') }}";
-                            const form = document.getElementById('login-form');
-
-                            form.addEventListener('submit', function (event) {
-                                event.preventDefault();
-
-                                const formData = new FormData(form);
-                                const requestOptions = {
-                                    method: 'POST',
-                                    headers: {
-                                        'Accept': 'application/json',
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    },
-                                    body: formData,
-                                };
-
-                                fetch(loginRoute, requestOptions)
-                                    .then(response => {
-                                        if (response.headers.get('content-type')?.includes('application/json')) {
-                                            return response.json();
-                                        } else {
-                                            return response.text().then(text => { throw new Error(text); });
-                                        }
-                                    })
-                                    .then(data => {
-                                        if (data.token) {
-                                            // トークンを文字列として保存
-                                            localStorage.setItem('authToken', data.token);
-                                            // リダイレクトをコメントアウトしてログを確認
-                                            window.location.href = '{{ url('/') }}';
-                                        } else {
-                                            console.error('Login failed');
-                                            alert('Login failed');
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Error:', error);
-                                        alert('An error occurred. Please try again.');
-                                    });
-                            });
-                        });
-                    </script>
                 </div>
             </div>
         </div>

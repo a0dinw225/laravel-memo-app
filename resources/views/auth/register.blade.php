@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('Register') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}" id="signup-form">
+                    <form method="POST" action="{{ route('register') }}">
                         @csrf
 
                         <div class="row mb-3">
@@ -68,49 +68,6 @@
                                 </button>
                             </div>
                         </div>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function () {
-                                const signupForm = document.getElementById('signup-form');
-
-                                if (signupForm) {
-                                    signupForm.addEventListener('submit', function (event) {
-                                        event.preventDefault();
-
-                                        const formData = new FormData(signupForm);
-                                        const requestOptions = {
-                                            method: 'POST',
-                                            headers: {
-                                                'Accept': 'application/json',
-                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                            },
-                                            body: formData,
-                                        };
-
-                                        fetch(signupForm.action, requestOptions)
-                                            .then(response => {
-                                                if (response.headers.get('content-type')?.includes('application/json')) {
-                                                    return response.json();
-                                                } else {
-                                                    return response.text().then(text => { throw new Error(text); });
-                                                }
-                                            })
-                                            .then(data => {
-                                                if (data.token) {
-                                                    localStorage.setItem('authToken', data.token);
-                                                    window.location.href = '{{ url('/') }}'; // Redirect to the home page or another page
-                                                } else {
-                                                    console.error('Signup failed');
-                                                    alert('Signup failed');
-                                                }
-                                            })
-                                            .catch(error => {
-                                                console.error('Signup error:', error);
-                                                alert('An error occurred. Please try again.');
-                                            });
-                                    });
-                                }
-                            });
-                        </script>
                     </form>
                 </div>
             </div>

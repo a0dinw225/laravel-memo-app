@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
+use \Illuminate\Http\RedirectResponse;
 
 class LoginController extends Controller
 {
@@ -47,7 +48,7 @@ class LoginController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function login(Request $request)
+    public function login(Request $request): RedirectResponse
     {
         $this->validateLogin($request);
 
@@ -55,10 +56,11 @@ class LoginController extends Controller
             $user = $this->guard()->user();
             $token = $user->createToken('Personal Access Token')->plainTextToken;
 
-            return response()->json([
-                'token' => $token,
-                'user' => $user
-            ]);
+            // トークンをセッションに保存し、クッキーの有効期限を設定
+            $request->session()->put('auth_token', $token);
+            $cookie = cookie('laravel_memo_app_sanctum_token', $token, config('session.lifetime'), null, null, false, true);
+
+            return $this->sendLoginResponse($request)->withCookie($cookie);
         }
 
         return $this->sendFailedLoginResponse($request);
@@ -71,10 +73,27 @@ class LoginController extends Controller
      * @param string $token
      * @return \Illuminate\Http\Response
      */
-    protected function sendLoginResponse(Request $request, $token): void
+    protected function sendLoginResponse(Request $request): RedirectResponse
     {
         $request->session()->regenerate();
         $this->clearLoginAttempts($request);
+
+        return redirect()->intended($this->redirectPath());
+    }
+
+    /**
+     * Get the failed login response instance.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function sendFailedLoginResponse(Request $request): RedirectResponse
+    {
+        return redirect()->back()
+            ->withInput($request->only($this->username(), 'remember'))
+            ->withErrors([
+                $this->username() => [trans('auth.failed')],
+            ]);
     }
 
     /**
@@ -83,7 +102,7 @@ class LoginController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function logout(Request $request)
+    public function logout(Request $request): RedirectResponse
     {
         $user = $request->user();
         if ($user) {
@@ -93,9 +112,19 @@ class LoginController extends Controller
         $this->guard()->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return $this->loggedOut($request) ?: redirect('/');
+        return redirect('/')->withCookie(cookie()->forget('laravel_memo_app_sanctum_token'));
+    }
+
+    /**
+     * The user has logged out of the application.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    protected function loggedOut(Request $request): RedirectResponse
+    {
+        return redirect('/');
     }
 }

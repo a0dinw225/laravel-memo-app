@@ -9,8 +9,8 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use \Illuminate\Http\RedirectResponse;
 
 class RegisterController extends Controller
 {
@@ -71,7 +71,6 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'api_token' => Str::random(80),
         ]);
     }
 
@@ -81,21 +80,21 @@ class RegisterController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function register(Request $request)
+    public function register(Request $request): RedirectResponse
     {
         $this->validator($request->all())->validate();
 
         $user = $this->create($request->all());
 
-        // ユーザーをログイン状態にする
-        Auth::login($user);
+        $this->guard()->login($user);
 
         $token = $user->createToken('Personal Access Token')->plainTextToken;
 
-        return response()->json([
-            'token' => $token,
-            'user' => $user
-        ]);
+        // トークンをセッションに保存し、クッキーの有効期限を設定
+        $request->session()->put('auth_token', $token);
+        $cookie = cookie('laravel_memo_app_sanctum_token', $token, config('session.lifetime'), null, null, false, true);
+
+        return $this->registered($request, $user) ?: redirect($this->redirectPath())->withCookie($cookie);
     }
 
 }
