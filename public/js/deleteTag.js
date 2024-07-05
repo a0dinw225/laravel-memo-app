@@ -1,11 +1,30 @@
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+
+  return cookieValue;
+}
+
 function deleteTag(tagId) {
-  const apiToken = document.querySelector('meta[name="api-token"]').content;
+  const apiUrl = document.querySelector('meta[name="api-url"]').content;
+  const token = getCookie('laravel_memo_app_sanctum_token');
+
   if (confirm('本当に削除しますか？')) {
-    fetch(`/api/v1/tag/delete/${tagId}`, {
+    fetch(`${apiUrl}/api/v1/tag/delete/${tagId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + apiToken
+        'Authorization': 'Bearer ' + token
       },
     })
     .then((response) => {
