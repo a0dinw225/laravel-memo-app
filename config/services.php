@@ -30,4 +30,6 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'go_api_url' => env('GO_API_URL', 'http://localhost:8082'),
+
 ];

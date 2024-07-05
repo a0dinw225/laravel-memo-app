@@ -6,9 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Laravel\Sanctum\HasApiTokens;
-use \Illuminate\Http\RedirectResponse;
+use Illuminate\Http\RedirectResponse;
+use App\Models\PersonalAccessToken;
 
 class LoginController extends Controller
 {
@@ -22,8 +21,7 @@ class LoginController extends Controller
     | to conveniently provide its functionality to your applications.
     |
     */
-
-    use AuthenticatesUsers, HasApiTokens;
+    use AuthenticatesUsers;
 
     /**
      * Where to redirect users after login.
@@ -46,7 +44,7 @@ class LoginController extends Controller
      * Handle a login request to the application.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function login(Request $request): RedirectResponse
     {
@@ -54,13 +52,18 @@ class LoginController extends Controller
 
         if ($this->attemptLogin($request)) {
             $user = $this->guard()->user();
-            $token = $user->createToken('Personal Access Token')->plainTextToken;
+            $plainTextToken = (string) \Str::uuid();
 
-            // トークンをセッションに保存し、クッキーの有効期限を設定
-            $request->session()->put('auth_token', $token);
-            $cookie = cookie('laravel_memo_app_sanctum_token', $token, config('session.lifetime'), null, null, false, true);
+            // createOrUpdateメソッドでトークンをデータベースに保存
+            PersonalAccessToken::createOrUpdate($user->id, 'Personal Access Token', $plainTextToken);
 
-            return $this->sendLoginResponse($request)->withCookie($cookie);
+            // トークンをセッションに保存
+            $request->session()->put('auth_token', $plainTextToken);
+
+            // プレーンテキストのトークンをクッキーに保存（暗号化なし）
+            setcookie('laravel_memo_app_sanctum_token', $plainTextToken, time() + (config('session.lifetime') * 60), '/', null, false, false);
+
+            return $this->sendLoginResponse($request);
         }
 
         return $this->sendFailedLoginResponse($request);
@@ -70,8 +73,7 @@ class LoginController extends Controller
      * Send the response after the user was authenticated.
      *
      * @param \Illuminate\Http\Request $request
-     * @param string $token
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     protected function sendLoginResponse(Request $request): RedirectResponse
     {
@@ -100,7 +102,7 @@ class LoginController extends Controller
      * Log the user out of the application.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function logout(Request $request): RedirectResponse
     {
@@ -114,14 +116,16 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->withCookie(cookie()->forget('laravel_memo_app_sanctum_token'));
+        setcookie('laravel_memo_app_sanctum_token', '', time() - 3600, '/', null, false, false);
+
+        return redirect('/');
     }
 
     /**
      * The user has logged out of the application.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     protected function loggedOut(Request $request): RedirectResponse
     {

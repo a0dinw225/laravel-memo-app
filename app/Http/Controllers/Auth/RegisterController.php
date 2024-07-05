@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use \Illuminate\Http\RedirectResponse;
+use Illuminate\Http\RedirectResponse;
+use App\Models\PersonalAccessToken;
 
 class RegisterController extends Controller
 {
@@ -88,13 +89,22 @@ class RegisterController extends Controller
 
         $this->guard()->login($user);
 
-        $token = $user->createToken('Personal Access Token')->plainTextToken;
+        $plainTextToken = (string) Str::uuid();
 
-        // トークンをセッションに保存し、クッキーの有効期限を設定
-        $request->session()->put('auth_token', $token);
-        $cookie = cookie('laravel_memo_app_sanctum_token', $token, config('session.lifetime'), null, null, false, true);
+        // createOrUpdateメソッドでトークンをデータベースに保存
+        PersonalAccessToken::createOrUpdate($user->id, 'Personal Access Token', $plainTextToken);
 
-        return $this->registered($request, $user) ?: redirect($this->redirectPath())->withCookie($cookie);
+        // トークンをセッションに保存
+        $request->session()->put('auth_token', $plainTextToken);
+
+        // プレーンテキストのトークンをクッキーに保存（暗号化なし）
+        setcookie('laravel_memo_app_sanctum_token', $plainTextToken, time() + (config('session.lifetime') * 60), '/', null, false, false);
+
+        return $this->registered($request, $user) ?: redirect($this->redirectPath());
     }
 
+    protected function registered(Request $request, $user): RedirectResponse
+    {
+        return redirect($this->redirectPath());
+    }
 }

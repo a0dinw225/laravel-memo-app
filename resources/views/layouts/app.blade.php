@@ -4,11 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- API Token -->
-    <meta name="api-token" content="{{ auth()->user()->api_token }}">
-
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- API URL -->
+    <meta name="api-url" content="{{ config('services.go_api_url') }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
@@ -90,7 +90,7 @@
                             <a href="/" class="card-text d-block text-decoration-none mb-2">全て表示</a>
                     @foreach($tags as $tag)
                             <a href="/?tag={{$tag['id']}}" class="card-text d-block text-decoration-none elipsis mb-2">{{ $tag['name'] }}</a>
-                    @endforeach 
+                    @endforeach
                         </div>
                     </div>
                 </div>
